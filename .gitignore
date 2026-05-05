@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+venv/
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Project Specific
+3d-generator/backend/outputs/*.glb
+3d-generator/backend/data/
+3d-generator/backend/venv/
+3d-generator/frontend/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
