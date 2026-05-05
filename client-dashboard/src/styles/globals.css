@@ -1,0 +1,194 @@
+@import "@fontsource-variable/fraunces/index.css";
+@import "@fontsource/mulish/300.css";
+@import "@fontsource/mulish/400.css";
+@import "@fontsource/mulish/500.css";
+@import "@fontsource/mulish/600.css";
+@import "@fontsource/mulish/700.css";
+@import "@fontsource/mulish/800.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Surfaces */
+  --paper: #FAFAF7;
+  --surface: #FFFFFF;
+  --surface-2: #F2F0EA;
+  --surface-3: #EDEAE0;
+
+  /* Ink */
+  --ink: #1A1F1C;
+  --ink-2: #3A4441;
+  --mute: #6B7570;
+  --dim: #99A19D;
+  --rule: #E4E1D8;
+
+  /* Brand */
+  --leaf: #5DB94D;
+  --leaf-deep: #3D8D2F;
+  --leaf-tint: #DFF1D8;
+  --mint: #C1EAE3;
+  --mint-tint: #E8F6F2;
+
+  /* Engineering accents */
+  --solar: #F4B82E;
+  --terracotta: #E07856;
+  --ink-blue: #1F4E66;
+  --crimson: #D64545;
+
+  /* Layout */
+  --rail-feature: 68px;
+  --rail-width: 248px;
+  --right-width: 360px;
+  --topbar-height: 64px;
+  --section-tabs-height: 48px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Mulish", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "tnum" 1, "ss01" 1;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--leaf-tint);
+  color: var(--ink);
+}
+
+/* Paper grain background */
+.bg-paper-grain {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(26, 31, 28, 0.04) 1px, transparent 0),
+    radial-gradient(circle at 12px 8px, rgba(26, 31, 28, 0.03) 1px, transparent 0);
+  background-size: 24px 24px, 32px 28px;
+}
+
+/* Blueprint grid for viewer canvas */
+.bg-blueprint {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(var(--rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rule) 1px, transparent 1px),
+    linear-gradient(rgba(228, 225, 216, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(228, 225, 216, 0.5) 1px, transparent 1px);
+  background-size:
+    96px 96px,
+    96px 96px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+}
+
+/* Display numerals */
+.numeral {
+  font-family: "Fraunces Variable", Fraunces, Georgia, serif;
+  font-feature-settings: "tnum" 1, "ss01" 1, "ss02" 1;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+}
+
+/* Mono data */
+.mono {
+  font-family: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+  font-feature-settings: "ss01" 1, "ss02" 1, "zero" 1;
+  letter-spacing: -0.005em;
+}
+
+/* Hairline divider */
+.hairline {
+  background: var(--rule);
+  height: 1px;
+}
+.hairline-v {
+  background: var(--rule);
+  width: 1px;
+}
+
+/* Crosshair cursor on canvas */
+.cursor-crosshair-leaf {
+  cursor: crosshair;
+}
+
+/* Layered scrollbars (subtle) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 999px;
+  border: 2px solid var(--paper);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dim);
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--leaf);
+  border-radius: 6px;
+}
+
+/* Button reset */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Dotted underline link motif */
+.link-dotted {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--mute);
+  text-underline-offset: 4px;
+}
+.link-dotted:hover {
+  text-decoration-color: var(--leaf-deep);
+  color: var(--leaf-deep);
+}
+
+/* Tabular numerals utility */
+.tab-num {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* Diagonal stripe pattern (used for "obstacle" markers) */
+.stripes-warn {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--terracotta) 0,
+    var(--terracotta) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  opacity: 0.18;
+}

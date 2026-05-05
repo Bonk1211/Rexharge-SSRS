@@ -1,0 +1,40 @@
+/* Phosphor Duotone — characterful Tier-1 UI set
+ * Engineering glyphs (./glyphs) — Tier-2 custom blueprint set */
+
+export {
+  ArrowUpRight,
+  ArrowRight,
+  CaretRight,
+  CaretDown,
+  CaretUp,
+  Plus,
+  MagnifyingGlass,
+  GearSix,
+  Bell,
+  User,
+  Sparkle,
+  Cube,
+  CloudSun,
+  CrosshairSimple,
+  Compass,
+  ChartLineUp,
+  Sun,
+  Lightning,
+  Stack,
+  Eye,
+  EyeSlash,
+  Download,
+  Buildings,
+  House,
+  CheckCircle,
+  Warning,
+  PaperPlaneTilt,
+  Polygon,
+  MapPin,
+  DotsThree,
+  ArrowsClockwise,
+  WaveSine,
+  ListChecks,
+} from "@phosphor-icons/react";
+
+export * from "./glyphs";
