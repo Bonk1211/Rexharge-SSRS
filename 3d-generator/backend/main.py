@@ -36,6 +36,7 @@ class GenerateModelRequest(BaseModel):
     panel_width: float = Field(default=1.1, gt=0)
     panel_height: float = Field(default=1.8, gt=0)
     panel_watt: float = Field(default=350, gt=0)
+    panel_bracket_tilt: float = Field(default=-1)
 
 
 @app.post("/generate-model")

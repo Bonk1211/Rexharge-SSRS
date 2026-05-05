@@ -13,7 +13,8 @@ const defaults = {
   porch_length: 6,
   porch_width: 10,
   porch_offset: 0,
-  panel_watt: 350,
+  panel_watt: 620, // Trina Solar Vertex N TSM-NEG19RC.20
+  panel_bracket_tilt: -1,
 };
 
 const fields = [
@@ -26,7 +27,8 @@ const fields = [
   ["porch_length", "Porch length", "m", 0, 20],
   ["porch_width", "Porch width", "m", 0, 30],
   ["porch_offset", "Porch side offset", "m", -20, 20],
-  ["panel_watt", "Panel wattage", "W", 100, 700],
+  ["panel_watt", "Panel wattage", "W", 300, 800],
+  ["panel_bracket_tilt", "Panel Tilt (-1 = Auto)", "deg", -1, 45],
 ];
 
 export default function UploadForm({ onGenerated }) {
@@ -38,8 +40,8 @@ export default function UploadForm({ onGenerated }) {
   const payload = useMemo(
     () => ({
       ...values,
-      panel_width: 1.1,
-      panel_height: 1.8,
+      panel_width: 1.134, // Trina Vertex N (1134mm)
+      panel_height: 2.382, // Trina Vertex N (2382mm)
     }),
     [values]
   );
@@ -86,7 +88,7 @@ export default function UploadForm({ onGenerated }) {
       }
 
       const data = await response.json();
-      onGenerated(data, values.roof_pitch);
+      onGenerated(data, payload);
     } catch (err) {
       setError(err.message);
     } finally {
