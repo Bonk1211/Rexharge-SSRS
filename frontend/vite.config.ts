@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const simulatorUrls: Record<string, string> = {
-  development: "http://localhost:5174/simulator",
-  staging: "https://staging.rexcharge.com/simulator",
-  production: "https://rexcharge.com/simulator",
+  development: "https://solar.limziyang.ml/simulator?model=https://xxx.com/static/models/video_7/3DModel.glb&lat=5.237826&lng=100.452277&usage=700&tariff=domestic&gmap=https://xxx.com/static/measurement/eco_horizon.png",
+  staging: "https://solar.limziyang.ml/simulator?model=https://xxx.com/static/models/video_7/3DModel.glb&lat=5.237826&lng=100.452277&usage=700&tariff=domestic&gmap=https://xxx.com/static/measurement/eco_horizon.png",
+  production: "https://solar.limziyang.ml/simulator?model=https://xxx.com/static/models/video_7/3DModel.glb&lat=5.237826&lng=100.452277&usage=700&tariff=domestic&gmap=https://xxx.com/static/measurement/eco_horizon.png",
 };
 
 export default defineConfig(({ mode }) => {
