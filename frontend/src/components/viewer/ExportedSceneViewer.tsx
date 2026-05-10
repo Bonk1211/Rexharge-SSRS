@@ -17,6 +17,12 @@ type ModelBounds = {
   minZ: number;
   maxZ: number;
 };
+type ClipBounds = {
+  xMin: number;
+  xMax: number;
+  zMin: number;
+  zMax: number;
+};
 
 interface ExportedPanel {
   index: number;
@@ -40,6 +46,7 @@ interface ExportedSceneReport {
     modelUrl: string;
   };
   buildingIsolation?: {
+    clipBounds_model?: ClipBounds;
     modelScale?: number;
     modelBounds?: ModelBounds;
   };
@@ -152,6 +159,7 @@ function ExportedScene({
   modelAvailable: boolean;
 }) {
   const bounds = report.buildingIsolation?.modelBounds;
+  const clipBounds = report.buildingIsolation?.clipBounds_model;
   const gridY = (bounds?.minY ?? 0) - 0.25;
   const panelTexture = useMemo(() => createSolarPanelTexture(), []);
 
@@ -183,6 +191,7 @@ function ExportedScene({
               panels={panels}
               scale={report.buildingIsolation?.modelScale ?? 0.063}
               bounds={bounds}
+              clipBounds={clipBounds}
               texture={panelTexture}
             />
           ) : (
@@ -211,25 +220,29 @@ function ReportModelWithPanels({
   panels,
   scale,
   bounds,
+  clipBounds,
   texture,
 }: {
   url: string;
   panels: ExportedPanel[];
   scale: number;
   bounds?: ModelBounds;
+  clipBounds?: ClipBounds;
   texture: THREE.Texture;
 }) {
   const gltf = useGLTF(url);
   const panelAlignment = useMemo(() => getPanelAlignment(url), [url]);
   const scene = useMemo(() => {
     const clone = gltf.scene.clone(true);
+    clone.updateMatrixWorld(true);
     clone.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
       object.castShadow = true;
       object.receiveShadow = true;
+      if (clipBounds) clipMeshToBounds(object, clipBounds);
     });
     return clone;
-  }, [gltf.scene]);
+  }, [clipBounds, gltf.scene]);
   const projectedPanels = useMemo(
     () => projectPanelsToModel(panels, scene, scale, panelAlignment, bounds),
     [bounds, panelAlignment, panels, scale, scene],
@@ -243,6 +256,64 @@ function ReportModelWithPanels({
       ))}
     </>
   );
+}
+
+function clipMeshToBounds(mesh: THREE.Mesh, clipBounds: ClipBounds) {
+  const source = mesh.geometry;
+  const position = source.getAttribute("position");
+  if (!position) return;
+
+  const index = source.getIndex();
+  const keep: number[] = [];
+  const a = new THREE.Vector3();
+  const b = new THREE.Vector3();
+  const c = new THREE.Vector3();
+  const centroid = new THREE.Vector3();
+
+  const triangleCount = index ? index.count / 3 : position.count / 3;
+  for (let triangle = 0; triangle < triangleCount; triangle++) {
+    const ia = index ? index.getX(triangle * 3) : triangle * 3;
+    const ib = index ? index.getX(triangle * 3 + 1) : triangle * 3 + 1;
+    const ic = index ? index.getX(triangle * 3 + 2) : triangle * 3 + 2;
+
+    a.fromBufferAttribute(position, ia).applyMatrix4(mesh.matrixWorld);
+    b.fromBufferAttribute(position, ib).applyMatrix4(mesh.matrixWorld);
+    c.fromBufferAttribute(position, ic).applyMatrix4(mesh.matrixWorld);
+    centroid.copy(a).add(b).add(c).multiplyScalar(1 / 3);
+
+    if (
+      centroid.x >= clipBounds.xMin &&
+      centroid.x <= clipBounds.xMax &&
+      centroid.z >= clipBounds.zMin &&
+      centroid.z <= clipBounds.zMax
+    ) {
+      keep.push(ia, ib, ic);
+    }
+  }
+
+  if (keep.length === 0) {
+    mesh.visible = false;
+    return;
+  }
+
+  if (keep.length === triangleCount * 3) return;
+
+  const clipped = new THREE.BufferGeometry();
+  for (const name of Object.keys(source.attributes)) {
+    const attr = source.getAttribute(name);
+    const values: number[] = [];
+    for (const vertexIndex of keep) {
+      for (let item = 0; item < attr.itemSize; item++) {
+        values.push(attr.getComponent(vertexIndex, item));
+      }
+    }
+    clipped.setAttribute(name, new THREE.BufferAttribute(new Float32Array(values), attr.itemSize, attr.normalized));
+  }
+
+  clipped.computeBoundingBox();
+  clipped.computeBoundingSphere();
+  if (!clipped.getAttribute("normal")) clipped.computeVertexNormals();
+  mesh.geometry = clipped;
 }
 
 function ReportPanel({ panel, scale, texture }: { panel: ExportedPanel; scale: number; texture: THREE.Texture }) {

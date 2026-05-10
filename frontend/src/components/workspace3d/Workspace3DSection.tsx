@@ -18,7 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import * as THREE from "three";
 
-const MODEL_URL = "/models/hunyuan_textured_768.glb";
+const MODEL_URL = "/models/econ_horizon_3D.glb";
 
 type Stage = "idle" | "processing" | "done";
 
