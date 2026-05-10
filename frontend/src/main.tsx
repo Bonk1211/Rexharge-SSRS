@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
 import Dashboard from "./pages/Dashboard";
+import Workspace3DConverter from "./pages/Workspace3DConverter";
 import Analysis from "./pages/Analysis";
 import NewProject from "./pages/NewProject.stub";
 import Report from "./pages/Report.stub";
@@ -20,6 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route element={<App />}>
           <Route index element={<Dashboard />} />
+          <Route path="workspace/3d-converter" element={<Workspace3DConverter />} />
           <Route path="captures" element={<Captures />} />
           <Route path="reports" element={<Reports />} />
           <Route path="tariffs" element={<Tariffs />} />

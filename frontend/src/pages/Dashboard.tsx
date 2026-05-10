@@ -126,7 +126,6 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
-
           {/* decorative band */}
           <div aria-hidden className="absolute right-0 top-8 hidden xl:block opacity-60 pointer-events-none">
             <svg width="360" height="220" viewBox="0 0 360 220">

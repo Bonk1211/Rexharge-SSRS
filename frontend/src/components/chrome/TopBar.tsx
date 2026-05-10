@@ -7,6 +7,7 @@ import { findProject } from "@/data/mock-projects";
 
 const ROUTE_TITLES: Array<{ test: (p: string) => boolean; crumbs: (path: string, id?: string) => string[] }> = [
   { test: (p) => p === "/", crumbs: () => ["Workspace", "Overview"] },
+  { test: (p) => p.startsWith("/workspace/3d-converter"), crumbs: () => ["Workspace", "3D Converter"] },
   { test: (p) => p.startsWith("/projects/new"), crumbs: () => ["Workspace", "Projects", "New project"] },
   { test: (p) => p.includes("/analysis"), crumbs: (_, id) => ["Workspace", "Projects", id ?? "—", "Analysis"] },
   { test: (p) => p.includes("/report"), crumbs: (_, id) => ["Workspace", "Projects", id ?? "—", "Report"] },

@@ -1,5 +1,7 @@
-import { Link, useParams } from "react-router-dom";
-import { MagnifyingGlass, Plus } from "@/icons";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { Cube, House, MagnifyingGlass, Plus } from "@/icons";
+import type { IconProps } from "@phosphor-icons/react";
+import type { ComponentType } from "react";
 import { projects } from "@/data/mock-projects";
 import StatusPill from "./StatusPill";
 import HairlineRule from "./HairlineRule";
@@ -7,6 +9,9 @@ import { fmtKWp } from "@/lib/format";
 
 export default function ProjectRail() {
   const { id } = useParams();
+  const location = useLocation();
+  const path = location.pathname;
+
   return (
     <aside
       className="hidden lg:flex flex-col bg-surface"
@@ -21,6 +26,25 @@ export default function ProjectRail() {
       <div className="px-4 pt-5 pb-3">
         <SearchInput />
       </div>
+
+      <HairlineRule label="Workspace" className="px-4" />
+
+      <nav className="px-2 py-2 space-y-0.5">
+        <WorkspaceLink
+          to="/"
+          label="Overview"
+          caption="Portfolio overview"
+          active={path === "/"}
+          Icon={House}
+        />
+        <WorkspaceLink
+          to="/workspace/3d-converter"
+          label="3D Converter"
+          caption="Photos to GLB"
+          active={path.startsWith("/workspace/3d-converter")}
+          Icon={Cube}
+        />
+      </nav>
 
       <HairlineRule label="Projects" className="px-4" />
 
@@ -99,6 +123,54 @@ const SearchInput = () => (
     />
     <span className="mono text-[9.5px] text-dim uppercase tracking-[0.14em]">⌘ K</span>
   </label>
+);
+
+const WorkspaceLink = ({
+  to,
+  label,
+  caption,
+  active,
+  Icon,
+}: {
+  to: string;
+  label: string;
+  caption: string;
+  active: boolean;
+  Icon: ComponentType<IconProps>;
+}) => (
+  <Link
+    to={to}
+    className="block group rounded-lg px-2.5 py-2 transition-colors relative"
+    style={{ background: active ? "var(--leaf-tint)" : "transparent" }}
+  >
+    {active && (
+      <span
+        aria-hidden
+        className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full"
+        style={{ background: "var(--leaf)" }}
+      />
+    )}
+    <div className="flex items-center gap-2.5">
+      <span
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-md"
+        style={{
+          background: active ? "var(--surface)" : "var(--surface-2)",
+          color: active ? "var(--leaf-deep)" : "var(--ink-2)",
+          border: "1px solid var(--rule)",
+        }}
+      >
+        <Icon size={18} weight={active ? "fill" : "duotone"} />
+      </span>
+      <span className="min-w-0">
+        <span className={`block truncate text-[12.5px] ${active ? "font-bold text-ink" : "font-semibold text-ink-2"}`}>
+          {label}
+        </span>
+        <span className="mono block truncate text-[9.5px] uppercase tracking-[0.14em] text-mute">
+          {caption}
+        </span>
+      </span>
+    </div>
+  </Link>
 );
 
 const Thumb = ({ hue }: { hue: number }) => (

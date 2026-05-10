@@ -78,7 +78,7 @@ export default function FeatureRail() {
   const location = useLocation();
   const path = location.pathname;
   const isActive = (item: NavItem) => {
-    if (item.to === "/") return path === "/" || path.startsWith("/projects");
+    if (item.to === "/") return path === "/" || path.startsWith("/workspace") || path.startsWith("/projects");
     return path === item.to || path.startsWith(`${item.to}/`);
   };
 
