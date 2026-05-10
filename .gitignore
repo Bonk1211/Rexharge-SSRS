@@ -13,10 +13,20 @@ __pycache__/
 .pytest_cache/
 
 # Project Specific
-3d-generator/backend/outputs/*.glb
-3d-generator/backend/data/
-3d-generator/backend/venv/
-3d-generator/frontend/node_modules/
+backend/generated_models/*.glb
+backend/generated_models/*.obj
+backend/generated_models/*.ply
+backend/venv/
+backend/test-frontend/node_modules/
+frontend/node_modules/
+
+# Local Hunyuan3D / ML environment
+.venv-hunyuan/
+.uv-cache/
+.uv-python/
+.hf-cache/
+backend/tools/Hunyuan3D-2.1/
+backend/paint_model_cache/
 
 # Frontend build / cache
 dist/
