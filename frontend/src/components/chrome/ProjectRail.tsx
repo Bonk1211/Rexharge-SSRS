@@ -1,5 +1,5 @@
 import { Link, useLocation, useParams } from "react-router-dom";
-import { Cube, House, MagnifyingGlass, Plus } from "@/icons";
+import { ArrowUpRight, Cube, House, MagnifyingGlass, Plus, WaveSine } from "@/icons";
 import type { IconProps } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 import { projects } from "@/data/mock-projects";
@@ -43,6 +43,12 @@ export default function ProjectRail() {
           caption="Photos to GLB"
           active={path.startsWith("/workspace/3d-converter")}
           Icon={Cube}
+        />
+        <WorkspaceExternalLink
+          href={__SIMULATOR_URL__}
+          label="Simulator"
+          caption="PV yield model"
+          Icon={WaveSine}
         />
       </nav>
 
@@ -171,6 +177,46 @@ const WorkspaceLink = ({
       </span>
     </div>
   </Link>
+);
+
+const WorkspaceExternalLink = ({
+  href,
+  label,
+  caption,
+  Icon,
+}: {
+  href: string;
+  label: string;
+  caption: string;
+  Icon: ComponentType<IconProps>;
+}) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noreferrer"
+    className="ml-5 block group rounded-lg px-2.5 py-2 transition-colors relative hover:bg-surface-2"
+  >
+    <div className="flex items-center gap-2.5">
+      <span
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-ink-2"
+        style={{
+          background: "var(--surface-2)",
+          border: "1px solid var(--rule)",
+        }}
+      >
+        <Icon size={16} weight="duotone" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[12px] font-semibold text-ink-2">
+          {label}
+        </span>
+        <span className="mono block truncate text-[9px] uppercase tracking-[0.14em] text-mute">
+          {caption}
+        </span>
+      </span>
+      <ArrowUpRight size={12} weight="bold" className="shrink-0 text-dim transition-colors group-hover:text-leaf-deep" />
+    </div>
+  </a>
 );
 
 const Thumb = ({ hue }: { hue: number }) => (
