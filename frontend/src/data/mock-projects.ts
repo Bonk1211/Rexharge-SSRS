@@ -24,9 +24,54 @@ export interface Project {
   planes: number;
   obstacles: number;
   capacityFactor: number;
+  reportId?: string;
 }
 
 export const projects: Project[] = [
+  {
+    id: "eco-horizon-01",
+    name: "Eco Horizon - Residential Cluster",
+    address: "Eco Horizon, Batu Kawan 14110 Pulau Pinang",
+    lat: 5.237826,
+    lon: 100.452277,
+    tariff: "domestic",
+    intakeMode: "drone_video",
+    status: "ready",
+    capturedAt: "2026-05-10T23:43:00+08:00",
+    thumbnailHue: 142,
+    kwp: 64.5,
+    annualKwh: 90_100,
+    annualSavingsRm: 3_716,
+    paybackYears: 65.9,
+    monthlyKwh: [7560, 7150, 7950, 7850, 7620, 7310, 7390, 7570, 7710, 7800, 7240, 6940],
+    panels: 104,
+    planes: 4,
+    obstacles: 0,
+    capacityFactor: 0.159,
+    reportId: "eco-horizon",
+  },
+  {
+    id: "ssu-um-01",
+    name: "SSU UM - Campus Rooftop",
+    address: "Universiti Malaya, 50603 Kuala Lumpur",
+    lat: 3.12808,
+    lon: 101.65101,
+    tariff: "non_domestic_lv",
+    intakeMode: "drone_video",
+    status: "ready",
+    capturedAt: "2026-05-10T23:45:00+08:00",
+    thumbnailHue: 205,
+    kwp: 116.6,
+    annualKwh: 162_900,
+    annualSavingsRm: 33_327,
+    paybackYears: 13.3,
+    monthlyKwh: [13_660, 12_910, 14_360, 14_180, 13_760, 13_200, 13_350, 13_680, 13_930, 14_090, 13_070, 12_700],
+    panels: 188,
+    planes: 5,
+    obstacles: 0,
+    capacityFactor: 0.159,
+    reportId: "ssu-um",
+  },
   {
     id: "bj-residential-01",
     name: "Bukit Jalil — Detached Residence",

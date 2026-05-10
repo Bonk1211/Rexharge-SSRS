@@ -7,6 +7,7 @@ import {
   packPanelsOnSouthSlope,
   sunPositionFromHour,
 } from "./geometry";
+import { createSolarPanelTexture } from "./solar-panel-texture";
 
 const ROOF = {
   length: 14,
@@ -27,6 +28,7 @@ export default function RoofScene() {
   const setSelectedPanel = useViewerStore((s) => s.setSelectedPanel);
 
   const { geom } = useMemo(() => buildHipRoof(ROOF), []);
+  const panelTexture = useMemo(() => createSolarPanelTexture(), []);
   const panels = useMemo(
     () =>
       packPanelsOnSouthSlope({
@@ -108,6 +110,7 @@ export default function RoofScene() {
             tilt={p.tiltDeg}
             shadingFactor={p.shadingFactor}
             showShading={layers.shading}
+            texture={panelTexture}
             selected={selectedPanel === i}
             onClick={() => setSelectedPanel(selectedPanel === i ? null : i)}
           />
@@ -160,6 +163,7 @@ const PanelMesh = ({
   tilt,
   shadingFactor,
   showShading,
+  texture,
   selected,
   onClick,
 }: {
@@ -169,6 +173,7 @@ const PanelMesh = ({
   tilt: number;
   shadingFactor: number;
   showShading: boolean;
+  texture: THREE.Texture;
   selected: boolean;
   onClick: () => void;
 }) => {
@@ -177,12 +182,32 @@ const PanelMesh = ({
     ? heatColor(shadingFactor)
     : selected
     ? "#F4B82E"
-    : "#1F4E66";
+    : "#FFFFFF";
+  const materials = useMemo(() => {
+    const edgeMat = new THREE.MeshStandardMaterial({
+      color: "#8995A1",
+      metalness: 0.55,
+      roughness: 0.28,
+    });
+    const backMat = new THREE.MeshStandardMaterial({
+      color: "#111924",
+      metalness: 0.35,
+      roughness: 0.5,
+    });
+    const faceMat = new THREE.MeshStandardMaterial({
+      map: texture,
+      color,
+      metalness: 0.42,
+      roughness: 0.26,
+    });
+
+    return [edgeMat, edgeMat, faceMat, backMat, edgeMat, edgeMat];
+  }, [color, texture]);
+
   return (
     <group position={[x, baseY + 0.05, z]} rotation={[tiltRad, 0, 0]} onClick={onClick}>
-      <mesh castShadow>
+      <mesh castShadow receiveShadow material={materials}>
         <boxGeometry args={[1.3, 0.04, 2.4]} />
-        <meshStandardMaterial color={color} metalness={0.5} roughness={0.35} />
       </mesh>
       {selected && (
         <mesh position={[0, 0.04, 0]}>

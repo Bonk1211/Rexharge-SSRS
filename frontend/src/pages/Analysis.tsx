@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowRight, Download, PaperPlaneTilt } from "@/icons";
 import { findProject } from "@/data/mock-projects";
@@ -5,6 +6,7 @@ import ProjectRail from "@/components/chrome/ProjectRail";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import StatusPill from "@/components/chrome/StatusPill";
 import SectionTabs from "@/components/chrome/SectionTabs";
+import ExportedSceneViewer from "@/components/viewer/ExportedSceneViewer";
 import MeshViewer from "@/components/viewer/MeshViewer";
 import SunPathScrubber from "@/components/viewer/SunPathScrubber";
 import MetricStack from "@/components/metrics/MetricStack";
@@ -13,6 +15,7 @@ import PlaneSummary from "@/components/data/PlaneSummary";
 import PanelSchedule from "@/components/data/PanelSchedule";
 import MonthlyYieldChart from "@/components/data/MonthlyYieldChart";
 import AssumptionsCard from "@/components/data/AssumptionsCard";
+import { loadProjectReport, type ProjectReport } from "@/data/project-reports";
 
 const SECTIONS = [
   { id: "sec-layout", label: "Layout", caption: "viewer · panels" },
@@ -26,6 +29,24 @@ export default function Analysis() {
   const { id } = useParams();
   const navigate = useNavigate();
   const project = findProject(id);
+  const [report, setReport] = useState<ProjectReport | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setReport(null);
+    setReportLoading(Boolean(project.reportId));
+
+    loadProjectReport(project.reportId).then((loadedReport) => {
+      if (cancelled) return;
+      setReport(loadedReport);
+      setReportLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [project.reportId]);
 
   return (
     <div className="flex">
@@ -85,7 +106,13 @@ export default function Analysis() {
             <SectionHeader index="01" title="Layout" subtitle="Reconstructed mesh + greedy panel pack + sun-path." />
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_var(--right-width)] gap-5">
               <div className="flex flex-col gap-4 min-w-0">
-                <MeshViewer lat={project.lat} lon={project.lon} />
+                {report ? (
+                  <ExportedSceneViewer report={report} />
+                ) : reportLoading ? (
+                  <ReportViewerSkeleton />
+                ) : (
+                  <MeshViewer lat={project.lat} lon={project.lon} />
+                )}
                 <div className="flex justify-center">
                   <SunPathScrubber />
                 </div>
@@ -193,5 +220,21 @@ const ReportCallout = ({ onOpen }: { onOpen: () => void }) => (
       Download PDF
       <ArrowRight weight="bold" size={13} />
     </button>
+  </div>
+);
+
+const ReportViewerSkeleton = () => (
+  <div
+    className="relative overflow-hidden rounded-2xl bg-blueprint"
+    style={{ border: "1px solid var(--rule)", aspectRatio: "16/9", minHeight: 520 }}
+  >
+    <div className="absolute inset-0 grid place-items-center">
+      <div
+        className="rounded-full bg-surface px-4 py-2 text-[12px] font-bold text-ink shadow-soft"
+        style={{ border: "1px solid var(--rule)" }}
+      >
+        Loading project model
+      </div>
+    </div>
   </div>
 );
