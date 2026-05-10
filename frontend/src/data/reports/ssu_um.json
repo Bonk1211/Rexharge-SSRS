@@ -102,9 +102,9 @@
   },
   "buildingIsolation": {
     "clipBounds_model": {
-      "xMin": -0.84162859916687,
+      "xMin": -0.50,
       "xMax": 1.05837140083313,
-      "zMin": -0.25833097974102,
+      "zMin": -0.55,
       "zMax": 1.14166902025898
     },
     "clipBounds_realWorld_m": {

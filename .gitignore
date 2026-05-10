@@ -55,3 +55,12 @@ pnpm-debug.log*
 Thumbs.db
 ehthumbs.db
 desktop.ini
+
+# Project Data / Assets
+eco_horizon.zip
+eco_horizon/
+ssu.zip
+ssu/
+ssu_um.json
+ssu_um_3D.glb
+

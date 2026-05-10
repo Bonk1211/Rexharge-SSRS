@@ -232,7 +232,20 @@ function ReportModelWithPanels({
 }) {
   const gltf = useGLTF(url);
   const panelAlignment = useMemo(() => getPanelAlignment(url), [url]);
-  const scene = useMemo(() => {
+  // Unclipped scene clone used for raycasting (so rays always hit the full roof)
+  const raycastScene = useMemo(() => {
+    const clone = gltf.scene.clone(true);
+    clone.updateMatrixWorld(true);
+    clone.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+      }
+    });
+    return clone;
+  }, [gltf.scene]);
+  // Clipped scene clone used for display
+  const displayScene = useMemo(() => {
     const clone = gltf.scene.clone(true);
     clone.updateMatrixWorld(true);
     clone.traverse((object) => {
@@ -244,13 +257,13 @@ function ReportModelWithPanels({
     return clone;
   }, [clipBounds, gltf.scene]);
   const projectedPanels = useMemo(
-    () => projectPanelsToModel(panels, scene, scale, panelAlignment, bounds),
-    [bounds, panelAlignment, panels, scale, scene],
+    () => projectPanelsToModel(panels, raycastScene, scale, panelAlignment, bounds),
+    [bounds, panelAlignment, panels, scale, raycastScene],
   );
 
   return (
     <>
-      <primitive object={scene} />
+      <primitive object={displayScene} />
       {projectedPanels.map((panel) => (
         <ReportPanel key={panel.index} panel={panel} scale={scale} texture={texture} />
       ))}
