@@ -35,9 +35,17 @@ const stages = [
   ["Render", "Textured GLB ready"],
 ] as const;
 
+function createId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 function createPhoto(file: File): ImportedPhoto {
   return {
-    id: `${file.name}-${file.lastModified}-${crypto.randomUUID()}`,
+    id: `${file.name}-${file.lastModified}-${createId()}`,
     name: file.name,
     size: file.size,
     url: URL.createObjectURL(file),

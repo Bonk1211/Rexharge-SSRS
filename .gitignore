@@ -27,6 +27,8 @@ frontend/node_modules/
 .hf-cache/
 backend/tools/Hunyuan3D-2.1/
 backend/paint_model_cache/
+backend/installers/
+*.exe
 
 # Frontend build / cache
 dist/

@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -22,8 +23,9 @@ def parse_args():
     )
     parser.add_argument(
         "--image",
-        default="data/1.PNG",
-        help="Reference image path, relative to backend/.",
+        nargs="+",
+        default=["data/1.PNG"],
+        help="One or more reference image paths, relative to backend/.",
     )
     parser.add_argument(
         "--output",
@@ -48,6 +50,11 @@ def parse_args():
         action="store_true",
         help="Skip Hunyuan's remesh step before texture baking.",
     )
+    parser.add_argument(
+        "--no-glb",
+        action="store_true",
+        help="Skip exporting a textured GLB next to the OBJ output.",
+    )
     return parser.parse_args()
 
 
@@ -56,15 +63,22 @@ def main():
     backend_root = Path(__file__).resolve().parents[1]
     repo = (backend_root / args.repo).resolve()
     mesh = (backend_root / args.mesh).resolve()
-    image = (backend_root / args.image).resolve()
+    images = [(backend_root / image).resolve() for image in args.image]
     output = (backend_root / args.output).resolve()
+    repo_root = backend_root.parent
+
+    os.environ.setdefault("HF_HOME", str(repo_root / ".hf-cache"))
+    os.environ.setdefault("HF_HUB_CACHE", str(repo_root / ".hf-cache" / "hub"))
+    os.environ.setdefault("HF_MODULES_CACHE", str(repo_root / ".hf-cache" / "modules"))
+    os.environ.setdefault("HUNYUAN3D_PAINT_MODEL_DIR", str(backend_root / "paint_model_cache"))
 
     if not repo.exists():
         raise FileNotFoundError(f"Hunyuan3D repo not found: {repo}")
     if not mesh.exists():
         raise FileNotFoundError(f"Input mesh not found: {mesh}")
-    if not image.exists():
-        raise FileNotFoundError(f"Reference image not found: {image}")
+    for image in images:
+        if not image.exists():
+            raise FileNotFoundError(f"Reference image not found: {image}")
 
     sys.path.insert(0, str(repo / "hy3dpaint"))
     sys.path.insert(0, str(repo))
@@ -94,6 +108,25 @@ def main():
     )
     conf.multiview_cfg_path = str(repo / "hy3dpaint" / "cfgs" / "hunyuan-paint-pbr.yaml")
     conf.custom_pipeline = str(repo / "hy3dpaint" / "hunyuanpaintpbr")
+    dino_snapshots = (
+        Path.home()
+        / ".cache"
+        / "huggingface"
+        / "hub"
+        / "models--facebook--dinov2-giant"
+        / "snapshots"
+    )
+    if dino_snapshots.exists():
+        dino_snapshot = next(
+            (
+                path
+                for path in sorted(dino_snapshots.iterdir(), reverse=True)
+                if (path / "preprocessor_config.json").exists()
+            ),
+            None,
+        )
+        if dino_snapshot is not None:
+            conf.dino_ckpt_path = str(dino_snapshot)
 
     start = time.time()
     pipeline = Hunyuan3DPaintPipeline(conf)
@@ -104,11 +137,18 @@ def main():
     start = time.time()
     result = pipeline(
         mesh_path=str(mesh),
-        image_path=str(image),
+        image_path=[str(image) for image in images],
         output_mesh_path=str(output),
         use_remesh=not args.no_remesh,
-        save_glb=False,
+        save_glb=not args.no_glb,
     )
+
+    glb_output = output.with_suffix(".glb")
+    if not args.no_glb and not glb_output.exists():
+        import trimesh
+
+        scene = trimesh.load(str(output), force="scene")
+        scene.export(str(glb_output))
 
     print("Texture generation seconds:", round(time.time() - start, 1))
     if torch.cuda.is_available():
@@ -116,8 +156,10 @@ def main():
             "Peak allocated VRAM:",
             round(torch.cuda.max_memory_allocated() / 1024**3, 2),
             "GB",
-        )
+    )
     print(f"Saved OBJ: {Path(result).resolve()}")
+    if not args.no_glb:
+        print(f"Saved GLB: {glb_output.resolve()}")
     print(f"Expected material: {output.with_suffix('.mtl')}")
     print(f"Expected albedo texture: {output.with_suffix('.jpg')}")
 
