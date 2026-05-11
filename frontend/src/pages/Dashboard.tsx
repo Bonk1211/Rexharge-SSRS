@@ -41,24 +41,7 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/projects/new"
-                  className="px-4 h-10 inline-flex items-center gap-2 rounded-full text-[13px] font-bold tracking-tight text-paper transition-colors"
-                  style={{ background: "var(--ink)" }}
-                >
-                  <Plus weight="bold" size={14} />
-                  New project
-                </Link>
-                <button
-                  onClick={() => toast("Coming soon")}
-                  className="px-4 h-10 inline-flex items-center gap-2 rounded-full text-[13px] font-bold tracking-tight text-ink transition-colors"
-                  style={{ background: "var(--leaf-tint)", color: "var(--leaf-deep)" }}
-                >
-                  <ListChecks weight="duotone" size={14} />
-                  Bulk-import drone set
-                </button>
-              </div>
+              <div />
             </div>
 
             {/* Hero metrics row */}

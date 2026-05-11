@@ -27,6 +27,7 @@ interface ImportedPhoto {
   name: string;
   size: number;
   url: string;
+  originalFile: File;
 }
 
 const stages = [
@@ -49,6 +50,7 @@ function createPhoto(file: File): ImportedPhoto {
     name: file.name,
     size: file.size,
     url: URL.createObjectURL(file),
+    originalFile: file,
   };
 }
 
@@ -57,7 +59,7 @@ function formatSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export default function Workspace3DSection() {
+export default function Workspace3DSection({ onComplete }: { onComplete?: (photos: File[], glbUrl: string) => void }) {
   const [photos, setPhotos] = useState<ImportedPhoto[]>([]);
   const [stage, setStage] = useState<Stage>("idle");
   const [progress, setProgress] = useState(0);
@@ -130,6 +132,9 @@ export default function Workspace3DSection() {
       window.setTimeout(() => {
         setModelUrl(MODEL_URL);
         setStage("done");
+        if (onComplete) {
+          onComplete(photosRef.current.map(p => p.originalFile), MODEL_URL);
+        }
       }, 3600),
     ];
   }

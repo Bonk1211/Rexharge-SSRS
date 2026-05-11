@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Bell, MagnifyingGlass, MapPin, Plus, Sparkle } from "@/icons";
+import { Bell, ListChecks, MagnifyingGlass, MapPin, Plus, Sparkle } from "@/icons";
 import { useProject } from "@/store/projects-store";
 import { useSearchStore } from "@/store/search-store";
 
@@ -48,14 +48,24 @@ export default function TopBar() {
 
         <Pill icon={<Sparkle weight="duotone" size={13} />} label="ATAP NEM 3.0 · live" />
 
-        <Link
-          to="/projects/new"
-          className="hidden md:inline-flex items-center gap-2 px-3.5 h-9 rounded-full text-[12px] font-bold tracking-tight text-paper transition-colors"
-          style={{ background: "var(--ink)" }}
-        >
-          <Plus weight="bold" size={13} />
-          New project
-        </Link>
+        <div className="hidden md:flex items-center gap-2">
+          <button
+            onClick={() => toast("Coming soon")}
+            className="px-3.5 h-9 inline-flex items-center gap-2 rounded-full text-[12px] font-bold tracking-tight text-ink transition-colors"
+            style={{ background: "var(--leaf-tint)", color: "var(--leaf-deep)" }}
+          >
+            <ListChecks weight="duotone" size={13} />
+            Bulk-import drone set
+          </button>
+          <Link
+            to="/projects/new"
+            className="inline-flex items-center gap-2 px-3.5 h-9 rounded-full text-[12px] font-bold tracking-tight text-paper transition-colors"
+            style={{ background: "var(--ink)" }}
+          >
+            <Plus weight="bold" size={13} />
+            New project
+          </Link>
+        </div>
 
         <button
           aria-label="Notifications"

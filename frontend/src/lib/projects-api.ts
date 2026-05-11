@@ -30,7 +30,7 @@ type AssetKind = 'source_video' | 'source_photo' | 'obj' | 'glb' | 'measurement'
 
 function bucketFor(kind: AssetKind): string {
   if (kind === 'glb' || kind === 'obj') return 'project-models'
-  if (kind === 'measurement') return 'project-images'
+  if (kind === 'measurement' || kind === 'source_photo') return 'project-images'
   return 'project-data'
 }
 

@@ -1,9 +1,10 @@
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRef, useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, CheckCircle, CloudArrowUp, X } from "@phosphor-icons/react";
 import ProjectRail from "@/components/chrome/ProjectRail";
 import HairlineRule from "@/components/chrome/HairlineRule";
+import Workspace3DSection from "@/components/workspace3d/Workspace3DSection";
 import { useCreateProject } from "@/store/projects-store";
 import { updateProject, uploadAsset, logEvent } from "@/lib/projects-api";
 import type { IntakeMode } from "@/data/mock-projects";
@@ -13,7 +14,7 @@ import type { IntakeMode } from "@/data/mock-projects";
 type Tariff = "domestic" | "non_domestic_lv";
 
 interface FileEntry {
-  kind: "glb" | "measurement" | "data_json";
+  kind: "glb" | "measurement" | "data_json" | "source_video" | "source_photo";
   file: File;
   progress: number; // 0–100
 }
@@ -31,22 +32,21 @@ interface FormData {
 const STEPS = ["Site setup", "Intake mode", "Upload", "Review & create"] as const;
 
 const INTAKE_OPTIONS: { value: IntakeMode; label: string; tag: string; desc: string }[] = [
-  { value: "drone_terra", label: "Drone · DJI Terra", tag: "Recommended", desc: "OBJ bundle from DJI Terra. Scale and georef auto-extracted." },
-  { value: "drone_video", label: "Drone · Video", tag: "MP4", desc: "Raw drone footage. Meshroom photogrammetry ~8 min on GPU." },
   { value: "photos",      label: "Photo set",       tag: "Phone OK", desc: "10–25 multi-angle photos. Manual scale calibration after recon." },
+  { value: "drone_video", label: "Drone · Video", tag: "MP4", desc: "Raw drone footage. Meshroom photogrammetry ~8 min on GPU." },
   { value: "demo",        label: "Demo site",        tag: "< 9 s",   desc: "Pre-baked Bukit Jalil mesh from cached PVGIS data." },
 ];
 
-const UPLOAD_SLOTS: { kind: FileEntry["kind"]; label: string; hint: string; accept: string; required: (mode: IntakeMode) => boolean }[] = [
-  { kind: "glb",         label: "GLB model",          hint: ".glb",       accept: ".glb",              required: (m) => m !== "demo" },
-  { kind: "measurement", label: "Measurement image",  hint: ".png / .jpg", accept: ".png,.jpg,.jpeg",   required: () => false },
-  { kind: "data_json",   label: "Data JSON",           hint: ".json",       accept: ".json",             required: () => false },
-];
+const UPLOAD_SLOTS: Record<string, { kind: FileEntry["kind"]; label: string; hint: string; accept: string }> = {
+  demo: { kind: "glb", label: "GLB model", hint: ".glb", accept: ".glb" },
+  drone_video: { kind: "source_video", label: "Drone video", hint: ".mp4 / .mov", accept: "video/mp4,video/quicktime" },
+};
 
 // ---------- component ----------
 
 export default function NewProject() {
   const navigate = useNavigate();
+  const location = useLocation();
   const createProject = useCreateProject();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -59,6 +59,18 @@ export default function NewProject() {
     intakeMode: "demo",
     files: [],
   });
+
+  useEffect(() => {
+    if (location.state?.prefilledFiles) {
+      setForm((f) => ({
+        ...f,
+        intakeMode: location.state.prefilledMode,
+        files: location.state.prefilledFiles.map((e: any) => ({ ...e, progress: 0 })),
+      }));
+      // Clear state so it doesn't refire if we navigate back
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   // ---- field helpers ----
 
@@ -73,10 +85,18 @@ export default function NewProject() {
     });
   };
 
-  const setProgress = (kind: FileEntry["kind"], progress: number) =>
+  const setMultipleFiles = (entries: { kind: FileEntry["kind"]; file: File }[]) => {
+    setForm((f) => {
+      const newKinds = new Set(entries.map((e) => e.kind));
+      const rest = f.files.filter((e) => !newKinds.has(e.kind));
+      return { ...f, files: [...rest, ...entries.map((e) => ({ ...e, progress: 0 }))] };
+    });
+  };
+
+  const setProgress = (file: File, progress: number) =>
     setForm((f) => ({
       ...f,
-      files: f.files.map((e) => (e.kind === kind ? { ...e, progress } : e)),
+      files: f.files.map((e) => (e.file === file ? { ...e, progress } : e)),
     }));
 
   // ---- validation ----
@@ -84,9 +104,10 @@ export default function NewProject() {
   const step0Valid = form.name.trim().length > 0 && form.lat.trim() !== "" && form.lon.trim() !== "";
 
   const step2Valid = (() => {
-    if (form.intakeMode === "demo") return true;
-    const glb = form.files.find((e) => e.kind === "glb");
-    return !!glb;
+    if (form.intakeMode === "demo") return !!form.files.find((e) => e.kind === "glb");
+    if (form.intakeMode === "drone_video") return !!form.files.find((e) => e.kind === "source_video");
+    if (form.intakeMode === "photos") return !!form.files.find((e) => e.kind === "glb"); // the generated GLB is stored as 'glb' kind
+    return false;
   })();
 
   const canAdvance = [step0Valid, true, step2Valid, true][step];
@@ -107,17 +128,20 @@ export default function NewProject() {
       });
 
       for (const entry of form.files) {
-        setProgress(entry.kind, 10);
+        setProgress(entry.file, 10);
         const { path } = await uploadAsset(project.id, entry.file, entry.kind);
-        setProgress(entry.kind, 80);
+        setProgress(entry.file, 80);
 
-        const pathField: Record<FileEntry["kind"], string> = {
+        const pathField: Partial<Record<FileEntry["kind"], string>> = {
           glb:         "modelGlbPath",
           measurement: "measurementImgPath",
           data_json:   "dataJsonPath",
         };
-        await updateProject(project.id, { [pathField[entry.kind]]: path } as never);
-        setProgress(entry.kind, 100);
+        const fieldName = pathField[entry.kind];
+        if (fieldName) {
+          await updateProject(project.id, { [fieldName]: path } as never);
+        }
+        setProgress(entry.file, 100);
       }
 
       await logEvent(project.id, "created");
@@ -140,14 +164,24 @@ export default function NewProject() {
     <div className="flex">
       <ProjectRail />
 
-      <main className="flex-1 px-8 lg:px-12 py-10 max-w-[860px]">
-        {/* breadcrumb */}
-        <div className="mono text-[10.5px] uppercase tracking-[0.24em] text-leaf-deep mb-1">
-          Step {step + 1} of {STEPS.length} · {STEPS[step]}
+      <main className={`flex-1 px-8 lg:px-12 py-10 ${step === 2 && form.intakeMode === "photos" ? "max-w-[1400px]" : "max-w-[860px]"}`}>
+        <div className="mb-8">
+          <div className="mono text-[10.5px] uppercase tracking-[0.24em] text-leaf-deep mb-2">
+            Step {step + 1} of {STEPS.length} · {STEPS[step]}
+          </div>
+          <h1
+            className="text-[42px] md:text-[54px] numeral leading-[0.96] tracking-[-0.035em] text-ink"
+            style={{ fontWeight: 600 }}
+          >
+            New rooftop{" "}
+            <span className="italic" style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}>
+              project.
+            </span>
+          </h1>
+          <p className="mt-3 text-[14px] text-mute max-w-[56ch]">
+            Configure site details, choose an intake mode, and upload reference files to generate a precise 3D solar model.
+          </p>
         </div>
-        <h1 className="numeral text-[40px] leading-[1] tracking-[-0.03em] text-ink mb-2" style={{ fontWeight: 600 }}>
-          New rooftop project.
-        </h1>
 
         {/* step indicators */}
         <div className="flex items-center gap-1.5 mb-8">
@@ -168,7 +202,7 @@ export default function NewProject() {
         {/* ---- step panels ---- */}
         {step === 0 && <Step0 form={form} set={set} />}
         {step === 1 && <Step1 form={form} set={set} />}
-        {step === 2 && <Step2 form={form} setFile={setFile} />}
+        {step === 2 && <Step2 form={form} setFile={setFile} setMultipleFiles={setMultipleFiles} />}
         {step === 3 && <Step3 form={form} />}
 
         {/* ---- nav ---- */}
@@ -332,23 +366,75 @@ function Step1({ form, set }: { form: FormData; set: <K extends keyof FormData>(
 
 // ---------- Step 2 — uploads ----------
 
-function Step2({ form, setFile }: { form: FormData; setFile: (kind: FileEntry["kind"], file: File | null) => void }) {
+function Step2({
+  form,
+  setFile,
+  setMultipleFiles,
+}: {
+  form: FormData;
+  setFile: (kind: FileEntry["kind"], file: File | null) => void;
+  setMultipleFiles: (entries: { kind: FileEntry["kind"]; file: File }[]) => void;
+}) {
+  if (form.intakeMode === "photos") {
+    const hasGlb = form.files.some((f) => f.kind === "glb");
+
+    if (hasGlb) {
+      return (
+        <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-surface shadow-soft border border-rule animate-riseIn">
+          <div className="w-14 h-14 bg-leaf-tint rounded-full flex items-center justify-center mb-4 text-leaf-deep">
+            <CheckCircle weight="fill" size={28} />
+          </div>
+          <p className="text-ink font-bold text-[18px] mb-2">Model successfully imported</p>
+          <p className="text-mute text-[14px]">
+            The 3D model and its source photos are ready. You can proceed to review and create.
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col gap-5">
+        <p className="text-[13.5px] text-mute">
+          Upload your rooftop photos to reconstruct a 3D model.
+        </p>
+        <Workspace3DSection
+          onComplete={async (files, glbUrl) => {
+            try {
+              const res = await fetch(glbUrl);
+              const blob = await res.blob();
+              const glbFile = new File([blob], "reconstructed_model.glb", { type: "model/gltf-binary" });
+              
+              const entries: { kind: FileEntry["kind"]; file: File }[] = [
+                { kind: "glb", file: glbFile },
+                ...files.map((file) => ({ kind: "source_photo" as const, file })),
+              ];
+              setMultipleFiles(entries);
+            } catch (err) {
+              console.error("Failed to fetch generated GLB:", err);
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
+  const slot = UPLOAD_SLOTS[form.intakeMode];
+  if (!slot) return null;
+
   return (
     <div className="flex flex-col gap-5">
       <p className="text-[13.5px] text-mute">
         {form.intakeMode === "demo"
-          ? "Demo mode uses a pre-baked mesh — uploads are optional."
-          : "Upload your GLB model (required), plus any optional supporting files."}
+          ? "Upload your pre-rendered GLB model."
+          : "Upload your raw drone footage."}
       </p>
-      {UPLOAD_SLOTS.map((slot) => (
-        <DropZone
-          key={slot.kind}
-          slot={slot}
-          entry={form.files.find((e) => e.kind === slot.kind)}
-          intakeMode={form.intakeMode}
-          onFile={setFile}
-        />
-      ))}
+      <DropZone
+        key={slot.kind}
+        slot={{ ...slot, required: () => true }}
+        entry={form.files.find((e) => e.kind === slot.kind)}
+        intakeMode={form.intakeMode}
+        onFile={setFile}
+      />
     </div>
   );
 }
@@ -359,7 +445,7 @@ function DropZone({
   intakeMode,
   onFile,
 }: {
-  slot: (typeof UPLOAD_SLOTS)[number];
+  slot: { kind: FileEntry["kind"]; label: string; hint: string; accept: string; required: (mode: IntakeMode) => boolean };
   entry: FileEntry | undefined;
   intakeMode: IntakeMode;
   onFile: (kind: FileEntry["kind"], file: File | null) => void;
@@ -454,8 +540,8 @@ function Step3({ form }: { form: FormData }) {
             <div style={{ borderTop: "1px dashed var(--rule)" }} className="pt-4">
               <div className="mono text-[10px] uppercase tracking-[0.18em] text-mute mb-3">Files to upload</div>
               <div className="flex flex-col gap-2">
-                {form.files.map((e) => (
-                  <div key={e.kind} className="flex items-center justify-between text-[12.5px]">
+                {form.files.map((e, index) => (
+                  <div key={`${e.kind}-${index}`} className="flex items-center justify-between text-[12.5px]">
                     <span className="mono text-[10px] uppercase tracking-[0.14em] text-leaf-deep">{e.kind}</span>
                     <span className="text-ink-2 truncate max-w-[60%]">{e.file.name}</span>
                     <span className="mono text-mute text-[11px]">{(e.file.size / 1024).toFixed(0)} KB</span>

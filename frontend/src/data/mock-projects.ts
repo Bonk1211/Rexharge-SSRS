@@ -1,5 +1,5 @@
 export type ProjectStatus = "ready" | "processing" | "draft" | "failed";
-export type IntakeMode = "drone_terra" | "drone_video" | "photos" | "demo";
+export type IntakeMode = "drone_video" | "photos" | "demo";
 
 export interface Project {
   id: string;
