@@ -1,12 +1,26 @@
 import { Link, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import ProjectRail from "@/components/chrome/ProjectRail";
-import { findProject } from "@/data/mock-projects";
+import { useProject } from "@/store/projects-store";
 import { Download } from "@/icons";
 import { fmtKWh, fmtKWp, fmtRM, fmtYears } from "@/lib/format";
 
 export default function Report() {
   const { id } = useParams();
-  const project = findProject(id);
+  const { data: project, isLoading } = useProject(id ?? '');
+
+  if (isLoading || !project) {
+    return (
+      <div className="flex">
+        <ProjectRail />
+        <main className="flex-1 flex items-center justify-center" style={{ minHeight: "60vh" }}>
+          <span className="mono text-[11px] uppercase tracking-[0.18em] text-mute animate-pulse">
+            {isLoading ? "Loading…" : "Project not found."}
+          </span>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex">
@@ -48,6 +62,7 @@ export default function Report() {
 
         <div className="flex items-center gap-3 mt-6">
           <button
+            onClick={() => toast("Coming soon")}
             className="px-4 h-10 inline-flex items-center gap-2 rounded-full text-[12.5px] font-bold tracking-tight text-paper"
             style={{ background: "var(--ink)" }}
           >

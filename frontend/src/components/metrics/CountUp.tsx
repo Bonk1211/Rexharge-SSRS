@@ -22,18 +22,19 @@ export default function CountUp({
   className?: string;
 }) {
   const [n, setN] = useState(0);
-  const startedRef = useRef(false);
+  const fromRef = useRef(0);
 
   useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
-    const controls = animate(0, value, {
+    const controls = animate(fromRef.current, value, {
       duration: durationMs / 1000,
       delay: delay / 1000,
       ease: [0.16, 1, 0.3, 1],
       onUpdate: (latest) => setN(latest),
     });
-    return () => controls.stop();
+    return () => {
+      fromRef.current = value;
+      controls.stop();
+    };
   }, [value, durationMs, delay]);
 
   const formatted = n.toLocaleString("en-MY", {

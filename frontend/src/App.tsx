@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import { Toaster } from "sonner";
 import FeatureRail from "@/components/chrome/FeatureRail";
 import TopBar from "@/components/chrome/TopBar";
 import { useShortcuts } from "@/lib/use-shortcuts";
@@ -12,6 +13,7 @@ export default function App() {
         <TopBar />
         <Outlet />
       </div>
+      <Toaster position="bottom-right" richColors />
     </div>
   );
 }

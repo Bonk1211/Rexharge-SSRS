@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { ArrowRight, Download, PaperPlaneTilt } from "@/icons";
-import { findProject } from "@/data/mock-projects";
+import { useProject, useSignedUrl } from "@/store/projects-store";
 import ProjectRail from "@/components/chrome/ProjectRail";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import StatusPill from "@/components/chrome/StatusPill";
@@ -28,25 +29,42 @@ const SECTIONS = [
 export default function Analysis() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const project = findProject(id);
+
+  const { data: project, isLoading } = useProject(id ?? '');
+  const { data: glbUrl } = useSignedUrl(
+    project?.modelGlbPath ? 'project-models' : undefined,
+    project?.modelGlbPath ?? undefined,
+  );
+
   const [report, setReport] = useState<ProjectReport | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
 
   useEffect(() => {
+    if (!project?.reportId) return;
     let cancelled = false;
     setReport(null);
-    setReportLoading(Boolean(project.reportId));
-
+    setReportLoading(true);
     loadProjectReport(project.reportId).then((loadedReport) => {
       if (cancelled) return;
       setReport(loadedReport);
       setReportLoading(false);
     });
+    return () => { cancelled = true; };
+  }, [project?.reportId]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [project.reportId]);
+  if (isLoading || !project) {
+    return (
+      <div className="flex">
+        <ProjectRail />
+        <main className="flex-1 flex items-center justify-center" style={{ minHeight: "60vh" }}>
+          {isLoading
+            ? <span className="mono text-[11px] uppercase tracking-[0.18em] text-mute animate-pulse">Loading…</span>
+            : <span className="mono text-[11px] uppercase tracking-[0.18em] text-mute">Project not found.</span>
+          }
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex">
@@ -80,6 +98,7 @@ export default function Analysis() {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => toast("Coming soon")}
               className="px-3.5 h-10 inline-flex items-center gap-2 rounded-full text-[12px] font-bold text-ink-2"
               style={{ background: "var(--surface-2)" }}
             >
@@ -106,7 +125,9 @@ export default function Analysis() {
             <SectionHeader index="01" title="Layout" subtitle="Reconstructed mesh + greedy panel pack + sun-path." />
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_var(--right-width)] gap-5">
               <div className="flex flex-col gap-4 min-w-0">
-                {report ? (
+                {glbUrl ? (
+                  <MeshViewer lat={project.lat} lon={project.lon} glbUrl={glbUrl} />
+                ) : report ? (
                   <ExportedSceneViewer report={report} />
                 ) : reportLoading ? (
                   <ReportViewerSkeleton />

@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, ListChecks, Plus, Stack } from "@/icons";
 import { PanelGlyph, PowerGlyph, RinggitGlyph, ClockTicksGlyph } from "@/icons";
-import { portfolioStats, projects } from "@/data/mock-projects";
+import { toast } from "sonner";
+import { useProjects, usePortfolioStats } from "@/store/projects-store";
 import ProjectRail from "@/components/chrome/ProjectRail";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import MetricTile from "@/components/metrics/MetricTile";
@@ -10,7 +11,8 @@ import ActivityFeed from "@/components/data/ActivityFeed";
 import IrradianceMap from "@/components/data/IrradianceMap";
 
 export default function Dashboard() {
-  const stats = portfolioStats();
+  const { data: projects = [], isLoading } = useProjects();
+  const stats = usePortfolioStats();
 
   return (
     <div className="flex">
@@ -49,6 +51,7 @@ export default function Dashboard() {
                   New project
                 </Link>
                 <button
+                  onClick={() => toast("Coming soon")}
                   className="px-4 h-10 inline-flex items-center gap-2 rounded-full text-[13px] font-bold tracking-tight text-ink transition-colors"
                   style={{ background: "var(--leaf-tint)", color: "var(--leaf-deep)" }}
                 >
@@ -151,12 +154,39 @@ export default function Dashboard() {
         <section className="px-8 lg:px-12 pb-12 max-w-[1400px]">
           <HairlineRule label="Sites in pipeline" className="mb-8" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {projects.map((p, i) => (
-              <ProjectCard key={p.id} project={p} index={i} />
-            ))}
-            <NewProjectCard index={projects.length} />
-          </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl animate-pulse"
+                  style={{ minHeight: 360, background: "var(--surface)", border: "1px solid var(--rule)" }}
+                />
+              ))}
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+              <p className="numeral text-[28px] text-ink-2" style={{ fontWeight: 600 }}>No projects yet.</p>
+              <p className="text-[13.5px] text-mute max-w-[36ch]">
+                Create your first project to see yield estimates and 3D analysis here.
+              </p>
+              <Link
+                to="/projects/new"
+                className="mt-2 px-5 h-10 inline-flex items-center gap-2 rounded-full text-[13px] font-bold tracking-tight text-paper"
+                style={{ background: "var(--ink)" }}
+              >
+                <Plus weight="bold" size={14} />
+                New project
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              {projects.map((p, i) => (
+                <ProjectCard key={p.id} project={p} index={i} />
+              ))}
+              <NewProjectCard index={projects.length} />
+            </div>
+          )}
         </section>
 
         {/* Bottom split: activity + irradiance map */}

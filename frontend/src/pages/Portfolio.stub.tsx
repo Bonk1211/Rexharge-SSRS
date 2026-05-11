@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import StatusPill from "@/components/chrome/StatusPill";
 import { ArrowUpRight } from "@/icons";
-import { projects, portfolioStats } from "@/data/mock-projects";
+import { useProjects, usePortfolioStats } from "@/store/projects-store";
 import { fmtKWh, fmtKWp, fmtRM, fmtYears } from "@/lib/format";
 
 export default function Portfolio() {
-  const s = portfolioStats();
+  const { data: projects = [] } = useProjects();
+  const s = usePortfolioStats();
   return (
     <main className="px-8 lg:px-12 py-10 max-w-[1400px]">
       <div className="mono text-[10.5px] uppercase tracking-[0.24em] text-leaf-deep mb-2">Portfolio</div>

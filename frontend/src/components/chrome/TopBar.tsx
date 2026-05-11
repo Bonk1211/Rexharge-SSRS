@@ -1,6 +1,9 @@
+import { useRef, useEffect } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { Bell, MagnifyingGlass, MapPin, Plus, Sparkle } from "@/icons";
-import { findProject } from "@/data/mock-projects";
+import { useProject } from "@/store/projects-store";
+import { useSearchStore } from "@/store/search-store";
 
 /* TopBar — contextual breadcrumb + global search + ATAP pill + primary CTA.
  * Brand wordmark lives in the FeatureRail; this bar is purely operational. */
@@ -22,7 +25,7 @@ const ROUTE_TITLES: Array<{ test: (p: string) => boolean; crumbs: (path: string,
 export default function TopBar() {
   const location = useLocation();
   const { id } = useParams();
-  const project = id ? findProject(id) : null;
+  const { data: project } = useProject(id ?? '');
   const onAnalysis = location.pathname.includes("/analysis");
 
   const route = ROUTE_TITLES.find((r) => r.test(location.pathname));
@@ -56,6 +59,7 @@ export default function TopBar() {
 
         <button
           aria-label="Notifications"
+          onClick={() => toast("Coming soon")}
           className="relative w-9 h-9 rounded-full grid place-items-center text-mute hover:text-ink hover:bg-surface-2 transition-colors"
         >
           <Bell weight="duotone" size={16} />
@@ -98,20 +102,54 @@ const Breadcrumb = ({
   </nav>
 );
 
-const SearchInput = () => (
-  <label
-    className="hidden xl:flex items-center gap-2 px-2.5 h-9 rounded-lg w-[280px]"
-    style={{ background: "var(--surface-2)" }}
-  >
-    <MagnifyingGlass weight="duotone" size={14} className="text-mute" />
-    <input
-      type="text"
-      placeholder="Jump to project, address, kWp…"
-      className="flex-1 bg-transparent text-[12.5px] placeholder-dim text-ink outline-none"
-    />
-    <span className="mono text-[9.5px] text-dim uppercase tracking-[0.14em]">⌘ K</span>
-  </label>
-);
+const SearchInput = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { query, setQuery, clear } = useSearchStore();
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  return (
+    <label
+      className="hidden xl:flex items-center gap-2 px-2.5 h-9 rounded-lg w-[280px]"
+      style={{ background: "var(--surface-2)" }}
+    >
+      <MagnifyingGlass weight="duotone" size={14} className="text-mute" />
+      <input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            clear();
+            inputRef.current?.blur();
+          }
+        }}
+        placeholder="Jump to project, address, kWp…"
+        className="flex-1 bg-transparent text-[12.5px] placeholder-dim text-ink outline-none"
+      />
+      {query ? (
+        <button
+          onClick={() => clear()}
+          className="text-[10px] text-mute hover:text-ink transition-colors"
+        >
+          ✕
+        </button>
+      ) : (
+        <span className="mono text-[9.5px] text-dim uppercase tracking-[0.14em]">⌘ K</span>
+      )}
+    </label>
+  );
+};
 
 const Pill = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
   <div

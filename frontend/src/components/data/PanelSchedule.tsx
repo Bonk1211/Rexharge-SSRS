@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { CaretDown } from "@/icons";
 
 /* Panel schedule — first-12-of-N table of generated panels.
@@ -24,7 +25,7 @@ export default function PanelSchedule() {
     <div className="bg-surface rounded-2xl overflow-hidden" style={{ border: "1px solid var(--rule)" }}>
       <header className="flex items-baseline justify-between px-5 pt-5 pb-3">
         <h3 className="text-[13px] font-extrabold tracking-tight">Panel schedule</h3>
-        <button className="mono text-[10px] uppercase tracking-[0.16em] text-mute hover:text-ink flex items-center gap-1">
+        <button onClick={() => toast("Coming soon")} className="mono text-[10px] uppercase tracking-[0.16em] text-mute hover:text-ink flex items-center gap-1">
           showing 12 of 38 <CaretDown weight="bold" size={10} />
         </button>
       </header>

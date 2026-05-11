@@ -1,8 +1,10 @@
+import { useRef, useMemo } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { ArrowUpRight, Cube, House, MagnifyingGlass, Plus, WaveSine } from "@/icons";
 import type { IconProps } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
-import { projects } from "@/data/mock-projects";
+import { useProjects } from "@/store/projects-store";
+import { useSearchStore } from "@/store/search-store";
 import StatusPill from "./StatusPill";
 import HairlineRule from "./HairlineRule";
 import { fmtKWp } from "@/lib/format";
@@ -11,6 +13,20 @@ export default function ProjectRail() {
   const { id } = useParams();
   const location = useLocation();
   const path = location.pathname;
+  const { data: projects = [] } = useProjects();
+  const query = useSearchStore((s) => s.query);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return projects;
+    return projects.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.address.toLowerCase().includes(q) ||
+        (p.kwp && String(p.kwp).includes(q)) ||
+        p.status.toLowerCase().includes(q)
+    );
+  }, [projects, query]);
 
   return (
     <aside
@@ -55,7 +71,13 @@ export default function ProjectRail() {
       <HairlineRule label="Projects" className="px-4" />
 
       <ul className="flex-1 overflow-y-auto px-2 py-2 space-y-0.5">
-        {projects.map((p) => {
+        {filtered.length === 0 && query.trim() && (
+          <li className="px-3 py-6 text-center">
+            <p className="text-[12px] text-mute">No projects matching</p>
+            <p className="text-[12px] text-ink-2 font-semibold mt-1">"{query.trim()}"</p>
+          </li>
+        )}
+        {filtered.map((p) => {
           const active = p.id === id;
           return (
             <li key={p.id}>
@@ -119,17 +141,40 @@ export default function ProjectRail() {
   );
 }
 
-const SearchInput = () => (
-  <label className="flex items-center gap-2 px-2.5 h-9 rounded-lg" style={{ background: "var(--surface-2)" }}>
-    <MagnifyingGlass weight="duotone" size={14} className="text-mute" />
-    <input
-      type="text"
-      placeholder="Search rooftops, sites, kWp…"
-      className="flex-1 bg-transparent text-[12.5px] placeholder-dim text-ink outline-none"
-    />
-    <span className="mono text-[9.5px] text-dim uppercase tracking-[0.14em]">⌘ K</span>
-  </label>
-);
+const SearchInput = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { query, setQuery, clear } = useSearchStore();
+
+  return (
+    <label className="flex items-center gap-2 px-2.5 h-9 rounded-lg" style={{ background: "var(--surface-2)" }}>
+      <MagnifyingGlass weight="duotone" size={14} className="text-mute" />
+      <input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            clear();
+            inputRef.current?.blur();
+          }
+        }}
+        placeholder="Search rooftops, sites, kWp…"
+        className="flex-1 bg-transparent text-[12.5px] placeholder-dim text-ink outline-none"
+      />
+      {query ? (
+        <button
+          onClick={() => clear()}
+          className="text-[10px] text-mute hover:text-ink transition-colors"
+        >
+          ✕
+        </button>
+      ) : (
+        <span className="mono text-[9.5px] text-dim uppercase tracking-[0.14em]">⌘ K</span>
+      )}
+    </label>
+  );
+};
 
 const WorkspaceLink = ({
   to,

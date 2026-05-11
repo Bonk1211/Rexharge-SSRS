@@ -1,11 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
 import Dashboard from "./pages/Dashboard";
 import Workspace3DConverter from "./pages/Workspace3DConverter";
 import Analysis from "./pages/Analysis";
-import NewProject from "./pages/NewProject.stub";
+import NewProject from "./pages/NewProject";
 import Report from "./pages/Report.stub";
 import Settings from "./pages/Settings.stub";
 import Captures from "./pages/Captures.stub";
@@ -15,8 +16,11 @@ import Portfolio from "./pages/Portfolio.stub";
 import Help from "./pages/Help.stub";
 import "./styles/globals.css";
 
+const queryClient = new QueryClient()
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>
         <Route element={<App />}>
@@ -34,5 +38,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </Route>
       </Routes>
     </BrowserRouter>
+    </QueryClientProvider>
   </React.StrictMode>,
 );

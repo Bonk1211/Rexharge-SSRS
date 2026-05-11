@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import { Download, ArrowUpRight, Sparkle } from "@/icons";
-import { projects } from "@/data/mock-projects";
+import { useProjects } from "@/store/projects-store";
 import { fmtKWp, fmtRM, fmtRelTime } from "@/lib/format";
 
 export default function Reports() {
+  const { data: projects = [] } = useProjects();
   const ready = projects.filter((p) => p.status === "ready");
   return (
     <main className="px-8 lg:px-12 py-10 max-w-[1400px]">

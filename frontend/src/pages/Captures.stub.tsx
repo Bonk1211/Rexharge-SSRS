@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import StatusPill from "@/components/chrome/StatusPill";
 import { DroneGlyph, MeshImportGlyph, PanelGlyph } from "@/icons";
@@ -94,7 +95,7 @@ export default function Captures() {
                 <td className="px-3 py-3 text-mute normal-case tracking-tight">{fmtRelTime(c.when)}</td>
                 <td className="px-3 py-3"><StatusPill status={c.status} size="sm" /></td>
                 <td className="px-5 py-3 text-right">
-                  <button className="text-mute hover:text-ink"><ArrowUpRight weight="bold" size={14} /></button>
+                  <button onClick={() => toast("Coming soon")} className="text-mute hover:text-ink"><ArrowUpRight weight="bold" size={14} /></button>
                 </td>
               </tr>
             ))}
