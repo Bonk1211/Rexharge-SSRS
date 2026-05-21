@@ -1,45 +1,67 @@
 import { useRef, useEffect } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import type { ComponentType } from "react";
+import type { IconProps } from "@phosphor-icons/react";
+import { Link, useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import { Bell, ListChecks, MagnifyingGlass, MapPin, Plus, Sparkle } from "@/icons";
-import { useProject } from "@/store/projects-store";
+import {
+  Bell,
+  Buildings,
+  GearSix,
+  House,
+  ListChecks,
+  MagnifyingGlass,
+  Plus,
+  Sparkle,
+  Stack,
+  User,
+} from "@/icons";
 import { useSearchStore } from "@/store/search-store";
+import CompactMark from "./CompactMark";
 
-/* TopBar — contextual breadcrumb + global search + ATAP pill + primary CTA.
- * Brand wordmark lives in the FeatureRail; this bar is purely operational. */
+type IconCmp = ComponentType<IconProps>;
 
-const ROUTE_TITLES: Array<{ test: (p: string) => boolean; crumbs: (path: string, id?: string) => string[] }> = [
-  { test: (p) => p === "/app" || p === "/app/", crumbs: () => ["Workspace", "Overview"] },
-  { test: (p) => p.startsWith("/app/workspace/3d-converter"), crumbs: () => ["Workspace", "3D Converter"] },
-  { test: (p) => p.startsWith("/app/projects/new"), crumbs: () => ["Workspace", "Projects", "New project"] },
-  { test: (p) => p.includes("/analysis"), crumbs: (_, id) => ["Workspace", "Projects", id ?? "—", "Analysis"] },
-  { test: (p) => p.includes("/report"), crumbs: (_, id) => ["Workspace", "Projects", id ?? "—", "Report"] },
-  { test: (p) => p.startsWith("/app/captures"), crumbs: () => ["Captures", "Recent uploads"] },
-  { test: (p) => p.startsWith("/app/reports"), crumbs: () => ["Reports", "Engineering PDFs"] },
-  { test: (p) => p.startsWith("/app/portfolio"), crumbs: () => ["Portfolio", "All sites"] },
-  { test: (p) => p.startsWith("/app/settings"), crumbs: () => ["Settings", "Workspace"] },
-  { test: (p) => p.startsWith("/app/help"), crumbs: () => ["Help", "Docs · shortcuts"] },
+interface NavItem {
+  to: string;
+  label: string;
+  shortcut?: string;
+  Icon: IconCmp;
+  match?: (p: string) => boolean;
+}
+
+const NAV: NavItem[] = [
+  {
+    to: "/app",
+    label: "Workspace",
+    shortcut: "1",
+    Icon: House,
+    match: (p) => p === "/app" || p === "/app/" || p.startsWith("/app/workspace") || p.startsWith("/app/projects"),
+  },
+  { to: "/app/captures", label: "Captures", shortcut: "2", Icon: Stack },
+  { to: "/app/reports", label: "Reports", shortcut: "3", Icon: ListChecks },
+  { to: "/app/portfolio", label: "Portfolio", shortcut: "4", Icon: Buildings },
 ];
 
 export default function TopBar() {
   const location = useLocation();
-  const { id } = useParams();
-  const { data: project } = useProject(id ?? '');
-  const onAnalysis = location.pathname.includes("/analysis");
-
-  const route = ROUTE_TITLES.find((r) => r.test(location.pathname));
-  const crumbs = route?.crumbs(location.pathname, project?.name?.split(" — ")[0] ?? id) ?? ["Workspace"];
+  const path = location.pathname;
+  const isActive = (item: NavItem) =>
+    item.match ? item.match(path) : path === item.to || path.startsWith(`${item.to}/`);
 
   return (
     <header
       className="sticky top-0 z-30 bg-paper/90 backdrop-blur-md"
-      style={{
-        height: "var(--topbar-height)",
-        borderBottom: "1px solid var(--rule)",
-      }}
+      style={{ height: "var(--topbar-height)", borderBottom: "1px solid var(--rule)" }}
     >
-      <div className="h-full px-6 flex items-center gap-5">
-        <Breadcrumb crumbs={crumbs} project={project?.name} onAnalysis={onAnalysis} />
+      <div className="h-full px-5 flex items-center gap-4">
+        <Link to="/app" className="shrink-0" aria-label="RexCharge home">
+          <CompactMark />
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-0.5">
+          {NAV.map((item) => (
+            <NavLink key={item.to} item={item} active={isActive(item)} />
+          ))}
+        </nav>
 
         <div className="flex-1" />
 
@@ -47,29 +69,19 @@ export default function TopBar() {
 
         <Pill icon={<Sparkle weight="duotone" size={13} />} label="ATAP NEM 3.0 · live" />
 
-        <div className="hidden md:flex items-center gap-2">
-          <button
-            onClick={() => toast("Coming soon")}
-            className="px-3.5 h-9 inline-flex items-center gap-2 rounded-full text-[12px] font-bold tracking-tight text-ink transition-colors"
-            style={{ background: "var(--leaf-tint)", color: "var(--leaf-deep)" }}
-          >
-            <ListChecks weight="duotone" size={13} />
-            Bulk-import drone set
-          </button>
-          <Link
-            to="/app/projects/new"
-            className="inline-flex items-center gap-2 px-3.5 h-9 rounded-full text-[12px] font-bold tracking-tight text-paper transition-colors"
-            style={{ background: "var(--ink)" }}
-          >
-            <Plus weight="bold" size={13} />
-            New project
-          </Link>
-        </div>
+        <Link
+          to="/app/projects/new"
+          className="hidden md:inline-flex items-center gap-2 px-3.5 h-9 rounded-full text-[12px] font-bold tracking-tight text-paper transition-colors shrink-0"
+          style={{ background: "var(--ink)" }}
+        >
+          <Plus weight="bold" size={13} />
+          New project
+        </Link>
 
         <button
           aria-label="Notifications"
           onClick={() => toast("Coming soon")}
-          className="relative w-9 h-9 rounded-full grid place-items-center text-mute hover:text-ink hover:bg-surface-2 transition-colors"
+          className="relative w-9 h-9 rounded-full grid place-items-center text-mute hover:text-ink hover:bg-surface-2 transition-colors shrink-0"
         >
           <Bell weight="duotone" size={16} />
           <span
@@ -78,37 +90,62 @@ export default function TopBar() {
             style={{ background: "var(--terracotta)" }}
           />
         </button>
+
+        <Link
+          to="/app/help"
+          aria-label="Help"
+          className="hidden lg:grid w-9 h-9 rounded-full place-items-center text-mute hover:text-ink hover:bg-surface-2 transition-colors shrink-0"
+        >
+          <Sparkle weight="duotone" size={16} />
+        </Link>
+
+        <Link
+          to="/app/settings"
+          aria-label="Settings"
+          className="hidden lg:grid w-9 h-9 rounded-full place-items-center text-mute hover:text-ink hover:bg-surface-2 transition-colors shrink-0"
+        >
+          <GearSix weight="duotone" size={16} />
+        </Link>
+
+        <Link
+          to="/app/settings"
+          aria-label="Profile"
+          className="w-9 h-9 rounded-full grid place-items-center shrink-0"
+          style={{
+            background: "var(--leaf-tint)",
+            border: "1px solid color-mix(in srgb, var(--leaf) 30%, transparent)",
+            color: "var(--leaf-deep)",
+          }}
+        >
+          <User weight="duotone" size={14} />
+        </Link>
       </div>
     </header>
   );
 }
 
-const Breadcrumb = ({
-  crumbs,
-  project,
-  onAnalysis,
-}: {
-  crumbs: string[];
-  project?: string;
-  onAnalysis: boolean;
-}) => (
-  <nav className="flex items-center gap-2 text-[12.5px] mono uppercase tracking-[0.16em] min-w-0">
-    {crumbs.map((c, i) => {
-      const isLast = i === crumbs.length - 1;
-      return (
-        <span key={i} className="flex items-center gap-2 min-w-0">
-          {i > 0 && <span aria-hidden className="text-dim">/</span>}
-          <span className={isLast ? "text-ink truncate" : "text-mute truncate"}>{truncate(c, 30)}</span>
-          {project && onAnalysis && isLast && (
-            <span className="ml-2 inline-flex items-center gap-1 text-leaf-deep">
-              <MapPin weight="fill" size={12} />
-              <span className="mono text-[10.5px] tracking-[0.12em]">live</span>
-            </span>
-          )}
-        </span>
-      );
-    })}
-  </nav>
+const NavLink = ({ item, active }: { item: NavItem; active: boolean }) => (
+  <Link
+    to={item.to}
+    aria-current={active ? "page" : undefined}
+    className="group relative inline-flex items-center gap-2 px-3 h-9 rounded-lg text-[12.5px] font-bold tracking-tight transition-colors"
+    style={{
+      background: active ? "var(--leaf-tint)" : "transparent",
+      color: active ? "var(--leaf-deep)" : "var(--ink-2)",
+    }}
+  >
+    <item.Icon size={15} weight={active ? "fill" : "duotone"} />
+    <span>{item.label}</span>
+    {item.shortcut && (
+      <span
+        className="mono text-[9px] uppercase tracking-[0.14em]"
+        style={{ color: active ? "var(--leaf-deep)" : "var(--dim)" }}
+        aria-hidden
+      >
+        {item.shortcut}
+      </span>
+    )}
+  </Link>
 );
 
 const SearchInput = () => {
@@ -128,7 +165,7 @@ const SearchInput = () => {
 
   return (
     <label
-      className="hidden xl:flex items-center gap-2 px-2.5 h-9 rounded-lg w-[280px]"
+      className="hidden xl:flex items-center gap-2 px-2.5 h-9 rounded-lg w-[260px] shrink-0"
       style={{ background: "var(--surface-2)" }}
     >
       <MagnifyingGlass weight="duotone" size={14} className="text-mute" />
@@ -147,10 +184,7 @@ const SearchInput = () => {
         className="flex-1 bg-transparent text-[12.5px] placeholder-dim text-ink outline-none"
       />
       {query ? (
-        <button
-          onClick={() => clear()}
-          className="text-[10px] text-mute hover:text-ink transition-colors"
-        >
+        <button onClick={() => clear()} className="text-[10px] text-mute hover:text-ink transition-colors">
           ✕
         </button>
       ) : (
@@ -162,7 +196,7 @@ const SearchInput = () => {
 
 const Pill = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
   <div
-    className="hidden md:flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[10.5px] mono uppercase tracking-[0.16em]"
+    className="hidden md:flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[10.5px] mono uppercase tracking-[0.16em] shrink-0"
     style={{
       background: "var(--leaf-tint)",
       color: "var(--leaf-deep)",
@@ -173,5 +207,3 @@ const Pill = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
     {label}
   </div>
 );
-
-const truncate = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
