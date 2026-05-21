@@ -2,7 +2,6 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bounds,
   ContactShadows,
-  Environment,
   Html,
   OrbitControls,
   useGLTF,
@@ -430,7 +429,6 @@ function ModelViewer({
             <Bounds fit clip observe margin={1.35}>
               <GeneratedModel url={modelUrl} />
             </Bounds>
-            <Environment preset="city" />
             <ContactShadows position={[0, -0.01, 0]} opacity={0.36} scale={8} blur={2.4} far={8} />
           </Suspense>
           <OrbitControls

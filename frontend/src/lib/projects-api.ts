@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import type { Project, ProjectStatus, IntakeMode } from '../data/mock-projects'
+import { MOCK_PROJECTS } from '../data/mock-projects'
 
 const DEV_OWNER_ID = import.meta.env.VITE_DEV_OWNER_ID as string
 
@@ -83,22 +84,42 @@ function projectToRow(input: NewProjectInput) {
 // ---------- API ----------
 
 export async function listProjects(): Promise<Project[]> {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  return (data as Record<string, unknown>[]).map(rowToProject)
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (error) throw error
+    const rows = (data as Record<string, unknown>[]).map(rowToProject)
+    if (rows.length === 0) {
+      console.warn('[projects-api] empty Supabase response — using MOCK_PROJECTS fallback')
+      return MOCK_PROJECTS
+    }
+    return rows
+  } catch (err) {
+    console.warn('[projects-api] Supabase listProjects failed — using MOCK_PROJECTS fallback:', err)
+    return MOCK_PROJECTS
+  }
 }
 
 export async function getProject(id: string): Promise<Project | null> {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', id)
-    .single()
-  if (error) { if (error.code === 'PGRST116') return null; throw error }
-  return rowToProject(data as Record<string, unknown>)
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', id)
+      .single()
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return MOCK_PROJECTS.find((p) => p.id === id) ?? null
+      }
+      throw error
+    }
+    return rowToProject(data as Record<string, unknown>)
+  } catch (err) {
+    console.warn('[projects-api] Supabase getProject failed — using MOCK fallback:', err)
+    return MOCK_PROJECTS.find((p) => p.id === id) ?? null
+  }
 }
 
 export async function createProject(input: NewProjectInput): Promise<Project> {
@@ -138,6 +159,15 @@ export async function updateProject(id: string, patch: Partial<Project> & Record
     .single()
   if (error) throw error
   return rowToProject(data as Record<string, unknown>)
+}
+
+export async function uploadScratchGlb(file: File): Promise<{ path: string; bucket: string }> {
+  const bucket = 'project-models'
+  const safeName = file.name.replace(/[^A-Za-z0-9._-]+/g, '_')
+  const path = `${DEV_OWNER_ID}/scratch/${Date.now()}_${safeName}`
+  const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true })
+  if (error) throw error
+  return { path, bucket }
 }
 
 export async function uploadAsset(

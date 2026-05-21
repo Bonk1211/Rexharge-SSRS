@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useMemo } from "react";
-import { Bounds, ContactShadows, Environment, Html, OrbitControls, useGLTF } from "@react-three/drei";
+import { Bounds, ContactShadows, Html, OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import RoofScene from "@/scene/RoofScene";
 import CrosshairCorners from "./CrosshairCorners";
@@ -61,7 +61,6 @@ export default function MeshViewer({ lat, lon, glbUrl }: { lat: number; lon: num
             <Bounds fit clip observe margin={1.35}>
               <GlbModel url={glbUrl} />
             </Bounds>
-            <Environment preset="city" />
             <ContactShadows position={[0, -0.01, 0]} opacity={0.36} scale={8} blur={2.4} far={8} />
           </Suspense>
           <OrbitControls makeDefault autoRotate autoRotateSpeed={0.75} enablePan enableZoom enableRotate minDistance={1.5} maxDistance={18} />

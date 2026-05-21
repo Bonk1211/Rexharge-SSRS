@@ -14,14 +14,24 @@ export default function Landing() {
   }, [navigate]);
 
   return (
-    <div className="bg-paper-grain" style={{ minHeight: "100vh" }}>
+    <div className="bg-paper-grain" style={{ minHeight: "100vh", scrollBehavior: "smooth" }}>
       <LandingNav onTryClick={onTryClick} />
       <main>
-        <Hero onTryClick={onTryClick} />
-        <StatBand />
-        <Features />
-        <HowItWorks />
-        <Closing onTryClick={onTryClick} />
+        <section id="studio" style={{ scrollMarginTop: 88 }}>
+          <Hero onTryClick={onTryClick} />
+        </section>
+        <section id="yield-model" style={{ scrollMarginTop: 88 }}>
+          <StatBand />
+        </section>
+        <section id="features" style={{ scrollMarginTop: 88 }}>
+          <Features />
+        </section>
+        <section id="how-it-works" style={{ scrollMarginTop: 88 }}>
+          <HowItWorks />
+        </section>
+        <section id="get-started" style={{ scrollMarginTop: 88 }}>
+          <Closing onTryClick={onTryClick} />
+        </section>
       </main>
     </div>
   );
