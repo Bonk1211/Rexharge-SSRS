@@ -16,6 +16,10 @@ import {
   Trash,
 } from "@phosphor-icons/react";
 import * as THREE from "three";
+import {
+  DEMO_PHOTO_SET_SAMPLE_HOUSE_3,
+  loadDemoPhotoFiles,
+} from "@/data/demo-photos";
 
 const MODEL_URL = "/models/econ_horizon_3D.glb";
 
@@ -63,6 +67,7 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
   const [stage, setStage] = useState<Stage>("idle");
   const [progress, setProgress] = useState(0);
   const [modelUrl, setModelUrl] = useState("");
+  const [loading, setLoading] = useState(false);
   const photosRef = useRef<ImportedPhoto[]>([]);
   const timersRef = useRef<number[]>([]);
 
@@ -78,8 +83,8 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
     timersRef.current = [];
   }
 
-  function handlePhotos(files: FileList | null) {
-    const nextPhotos = Array.from(files ?? [])
+  function applyPhotos(rawFiles: File[]) {
+    const nextPhotos = rawFiles
       .filter((file) => file.type.startsWith("image/"))
       .map(createPhoto)
       .slice(0, 8);
@@ -93,6 +98,19 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
     setStage("idle");
     setProgress(0);
     setModelUrl("");
+  }
+
+  async function loadDemoPhotos() {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const files = await loadDemoPhotoFiles(DEMO_PHOTO_SET_SAMPLE_HOUSE_3);
+      applyPhotos(files);
+    } catch (err) {
+      console.error("Failed to load demo photos:", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   function removePhoto(id: string) {
@@ -160,7 +178,8 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
           photos={photos}
           stage={stage}
           progress={progress}
-          onPhotos={handlePhotos}
+          onLoadDemo={loadDemoPhotos}
+          loading={loading}
           onRemove={removePhoto}
           onGenerate={generateRender}
         />
@@ -206,14 +225,16 @@ function ImportPanel({
   photos,
   stage,
   progress,
-  onPhotos,
+  onLoadDemo,
+  loading,
   onRemove,
   onGenerate,
 }: {
   photos: ImportedPhoto[];
   stage: Stage;
   progress: number;
-  onPhotos: (files: FileList | null) => void;
+  onLoadDemo: () => void;
+  loading: boolean;
   onRemove: (id: string) => void;
   onGenerate: () => void;
 }) {
@@ -222,30 +243,28 @@ function ImportPanel({
 
   return (
     <div className="flex flex-col gap-3">
-      <label className="group flex min-h-[128px] cursor-pointer flex-col items-center justify-center gap-2.5 rounded-xl border border-dashed border-rule bg-paper px-4 py-4 text-center transition-colors hover:border-leaf hover:bg-leaf-tint/35">
+      <button
+        type="button"
+        onClick={onLoadDemo}
+        disabled={isProcessing || loading}
+        className="group flex min-h-[128px] cursor-pointer flex-col items-center justify-center gap-2.5 rounded-xl border border-dashed border-rule bg-paper px-4 py-4 text-center transition-colors hover:border-leaf hover:bg-leaf-tint/35 disabled:cursor-not-allowed disabled:opacity-60"
+      >
         <span className="grid h-12 w-12 place-items-center rounded-xl bg-surface-2 text-leaf-deep">
-          <ImageSquare weight="duotone" size={24} />
+          {loading ? (
+            <ArrowsClockwise className="animate-spin" weight="bold" size={22} />
+          ) : (
+            <ImageSquare weight="duotone" size={24} />
+          )}
         </span>
         <span>
           <span className="block text-[13px] font-extrabold tracking-tight text-ink">
-            Import rooftop photos
+            {loading ? "Loading demo photos…" : "Load demo photo set"}
           </span>
           <span className="mt-1 block text-[12px] leading-5 text-mute">
-            Select one or more images to run the demo flow.
+            Click to load the cached Sample House 3 set (11 photos).
           </span>
         </span>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          disabled={isProcessing}
-          onChange={(event) => {
-            onPhotos(event.target.files);
-            event.target.value = "";
-          }}
-          className="sr-only"
-        />
-      </label>
+      </button>
 
       {photos.length > 0 && (
         <div className="grid grid-cols-2 gap-2">

@@ -56,6 +56,7 @@ const buildNav = (openDemo: () => void): NavItem[] => [
       p === "/app" ||
       p === "/app/" ||
       (p.startsWith("/app/projects/") && !p.startsWith("/app/projects/new")),
+    onClick: () => {},
   },
 ];
 

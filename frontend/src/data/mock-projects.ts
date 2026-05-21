@@ -24,6 +24,18 @@ export interface Project {
   modelGlbPath?: string | null;
   measurementImgPath?: string | null;
   dataJsonPath?: string | null;
+  irradianceWm2?: number;
+  ambientTempC?: number;
+  windSpeedMs?: number;
+  humidityPercent?: number;
+  cloudCoverPercent?: number;
+  roofCoveragePercent?: number;
+  shadingLossPercent?: number;
+  inverterModelSku?: string;
+  inverterUnitCapacityKw?: number;
+  monthlyUsageKwh?: number;
+  nemSellbackEnabled?: boolean;
+  tariffType?: string;
 }
 
 /* Seeded portfolio — used as a fallback when Supabase is empty / unavailable
@@ -53,6 +65,18 @@ export const MOCK_PROJECTS: Project[] = [
     modelGlbPath: null,
     measurementImgPath: null,
     dataJsonPath: null,
+    irradianceWm2: 985,
+    ambientTempC: 31,
+    windSpeedMs: 2.4,
+    humidityPercent: 74,
+    cloudCoverPercent: 18,
+    roofCoveragePercent: 62,
+    shadingLossPercent: 4.5,
+    inverterModelSku: "Sigen 10K-LV",
+    inverterUnitCapacityKw: 10,
+    monthlyUsageKwh: 850,
+    nemSellbackEnabled: true,
+    tariffType: "Domestik",
   },
   {
     id: "PRJ-2026-0002",
@@ -78,6 +102,18 @@ export const MOCK_PROJECTS: Project[] = [
     modelGlbPath: null,
     measurementImgPath: null,
     dataJsonPath: null,
+    irradianceWm2: 1018,
+    ambientTempC: 33,
+    windSpeedMs: 3.1,
+    humidityPercent: 70,
+    cloudCoverPercent: 12,
+    roofCoveragePercent: 71,
+    shadingLossPercent: 2.8,
+    inverterModelSku: "Sigen 50K-3PH",
+    inverterUnitCapacityKw: 50,
+    monthlyUsageKwh: 4200,
+    nemSellbackEnabled: true,
+    tariffType: "Komersial Voltan Rendah",
   },
   {
     id: "PRJ-2026-0003",
@@ -200,5 +236,17 @@ export const MOCK_PROJECTS: Project[] = [
     modelGlbPath: null,
     measurementImgPath: null,
     dataJsonPath: null,
+    irradianceWm2: 1052,
+    ambientTempC: 34,
+    windSpeedMs: 3.6,
+    humidityPercent: 68,
+    cloudCoverPercent: 8,
+    roofCoveragePercent: 78,
+    shadingLossPercent: 1.9,
+    inverterModelSku: "Sigen 100K-3PH",
+    inverterUnitCapacityKw: 100,
+    monthlyUsageKwh: 7400,
+    nemSellbackEnabled: true,
+    tariffType: "Komersial Voltan Sederhana",
   },
 ];
