@@ -1,0 +1,9 @@
+{
+  "_placeholder": true,
+  "site": {
+    "latitude": 3.110072,
+    "longitude": 101.622002,
+    "scenarioName": "Rainbow Recreation Center",
+    "modelUrl": "https://solar.limziyang.ml/static/models/video_6/3DModel.glb"
+  }
+}

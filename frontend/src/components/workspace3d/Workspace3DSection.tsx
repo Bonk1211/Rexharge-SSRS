@@ -12,10 +12,13 @@ import {
   CheckCircle,
   Cube,
   ImageSquare,
-  Sparkle,
   Trash,
 } from "@phosphor-icons/react";
 import * as THREE from "three";
+import {
+  DEMO_PHOTO_SET_SAMPLE_HOUSE_3,
+  loadDemoPhotoFiles,
+} from "@/data/demo-photos";
 
 const MODEL_URL = "/models/econ_horizon_3D.glb";
 
@@ -30,9 +33,9 @@ interface ImportedPhoto {
 }
 
 const stages = [
-  ["Import", "Photos received"],
-  ["Process", "Reconstructing roof geometry"],
-  ["Render", "Textured GLB ready"],
+  ["Add", "Photos imported"],
+  ["Build", "Reconstructing"],
+  ["Done", "Model ready"],
 ] as const;
 
 function createId() {
@@ -63,6 +66,7 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
   const [stage, setStage] = useState<Stage>("idle");
   const [progress, setProgress] = useState(0);
   const [modelUrl, setModelUrl] = useState("");
+  const [loading, setLoading] = useState(false);
   const photosRef = useRef<ImportedPhoto[]>([]);
   const timersRef = useRef<number[]>([]);
 
@@ -78,8 +82,8 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
     timersRef.current = [];
   }
 
-  function handlePhotos(files: FileList | null) {
-    const nextPhotos = Array.from(files ?? [])
+  function applyPhotos(rawFiles: File[]) {
+    const nextPhotos = rawFiles
       .filter((file) => file.type.startsWith("image/"))
       .map(createPhoto)
       .slice(0, 8);
@@ -93,6 +97,19 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
     setStage("idle");
     setProgress(0);
     setModelUrl("");
+  }
+
+  async function loadDemoPhotos() {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const files = await loadDemoPhotoFiles(DEMO_PHOTO_SET_SAMPLE_HOUSE_3);
+      applyPhotos(files);
+    } catch (err) {
+      console.error("Failed to load demo photos:", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   function removePhoto(id: string) {
@@ -140,65 +157,61 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
 
   return (
     <section className="w-full" id="workspace-3d">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="mono text-[10.5px] uppercase tracking-[0.22em] text-leaf-deep">
-            Workspace · 3D reconstruction
-          </p>
-          <h2 className="mt-2 numeral text-[34px] leading-[0.98] text-ink">
-            Photo set to textured model.
+          <h2 className="numeral text-[22px] leading-[1.05] text-ink" style={{ fontWeight: 600 }}>
+            Create 3D from photos.
           </h2>
+          <p className="mt-1 text-[12px] text-mute">
+            Built from {DEMO_PHOTO_SET_SAMPLE_HOUSE_3.length} rooftop photos in ~4 s.
+          </p>
         </div>
-        <HeaderStats photos={photos.length} stage={stage} progress={progress} />
+        <span
+          className="mono text-[10px] uppercase tracking-[0.18em] text-leaf-deep px-2.5 py-1 rounded-full"
+          style={{ background: "var(--leaf-tint)" }}
+        >
+          Sample House 3
+        </span>
       </div>
 
       <div
-        className="grid gap-5 rounded-2xl bg-surface p-5 shadow-soft lg:grid-cols-[340px_minmax(0,1fr)]"
+        className="grid gap-3 rounded-2xl bg-surface p-4 shadow-soft lg:grid-cols-[3fr_2fr]"
         style={{ border: "1px solid var(--rule)" }}
       >
+        <ModelViewer modelUrl={modelUrl} stage={stage} progress={progress} photoCount={photos.length} />
         <ImportPanel
           photos={photos}
           stage={stage}
           progress={progress}
-          onPhotos={handlePhotos}
+          onLoadDemo={loadDemoPhotos}
+          loading={loading}
           onRemove={removePhoto}
           onGenerate={generateRender}
         />
-        <ModelViewer modelUrl={modelUrl} stage={stage} progress={progress} photoCount={photos.length} />
       </div>
+
+      {stage === "done" && (
+        <div className="mt-3 flex items-center justify-end gap-2">
+          <a
+            href={MODEL_URL}
+            download="reconstructed_model.glb"
+            className="inline-flex h-9 items-center gap-2 rounded-lg bg-leaf-deep px-4 text-[12px] font-extrabold tracking-tight text-paper transition-colors hover:bg-leaf"
+          >
+            <Cube weight="duotone" size={14} />
+            Download .glb
+          </a>
+          <button
+            type="button"
+            onClick={generateRender}
+            className="inline-flex h-9 items-center gap-2 rounded-lg bg-surface px-4 text-[12px] font-extrabold tracking-tight text-ink transition-colors hover:bg-surface-2"
+            style={{ border: "1px solid var(--rule)" }}
+          >
+            <ArrowsClockwise weight="bold" size={13} />
+            Regenerate
+          </button>
+        </div>
+      )}
     </section>
-  );
-}
-
-function HeaderStats({ photos, stage, progress }: { photos: number; stage: Stage; progress: number }) {
-  const pct = stage === "processing" ? progress : stage === "done" ? 100 : 0;
-  const modelStatus = stage === "done" ? "Ready" : stage === "processing" ? "Building" : "Pending";
-  return (
-    <div className="flex flex-wrap items-stretch gap-2">
-      <StatPill label="Photos" value={String(photos)} />
-      <StatPill label="Progress" value={`${pct}%`} />
-      <StatPill label="Model" value={modelStatus} accent={stage === "done"} />
-    </div>
-  );
-}
-
-function StatPill({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div
-      className="flex items-center gap-2 rounded-full px-3 py-1.5"
-      style={{
-        background: accent ? "var(--leaf-tint)" : "var(--surface-2)",
-        border: "1px solid var(--rule)",
-      }}
-    >
-      <span className="mono text-[10px] uppercase tracking-[0.18em] text-mute">{label}</span>
-      <span
-        className="numeral tab-num text-[13px] font-bold"
-        style={{ color: accent ? "var(--leaf-deep)" : "var(--ink)" }}
-      >
-        {value}
-      </span>
-    </div>
   );
 }
 
@@ -206,14 +219,16 @@ function ImportPanel({
   photos,
   stage,
   progress,
-  onPhotos,
+  onLoadDemo,
+  loading,
   onRemove,
   onGenerate,
 }: {
   photos: ImportedPhoto[];
   stage: Stage;
   progress: number;
-  onPhotos: (files: FileList | null) => void;
+  onLoadDemo: () => void;
+  loading: boolean;
   onRemove: (id: string) => void;
   onGenerate: () => void;
 }) {
@@ -221,64 +236,93 @@ function ImportPanel({
   const activeStep = stage === "done" ? 2 : isProcessing ? 1 : photos.length > 0 ? 0 : -1;
 
   return (
-    <div className="flex flex-col gap-3">
-      <label className="group flex min-h-[128px] cursor-pointer flex-col items-center justify-center gap-2.5 rounded-xl border border-dashed border-rule bg-paper px-4 py-4 text-center transition-colors hover:border-leaf hover:bg-leaf-tint/35">
-        <span className="grid h-12 w-12 place-items-center rounded-xl bg-surface-2 text-leaf-deep">
-          <ImageSquare weight="duotone" size={24} />
-        </span>
-        <span>
-          <span className="block text-[13px] font-extrabold tracking-tight text-ink">
-            Import rooftop photos
-          </span>
-          <span className="mt-1 block text-[12px] leading-5 text-mute">
-            Select one or more images to run the demo flow.
-          </span>
-        </span>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          disabled={isProcessing}
-          onChange={(event) => {
-            onPhotos(event.target.files);
-            event.target.value = "";
-          }}
-          className="sr-only"
-        />
-      </label>
+    <div className="flex flex-col gap-3 h-[320px] overflow-y-auto pr-1">
+      <div
+        className="rounded-xl bg-paper p-3 flex flex-col gap-2.5"
+        style={{ border: "1px solid var(--rule)" }}
+      >
+        <div className="flex items-baseline justify-between">
+          <div>
+            <h3 className="text-[12.5px] font-extrabold tracking-tight text-ink">Use sample dataset</h3>
+            <p className="mono text-[9.5px] uppercase tracking-[0.16em] text-mute mt-0.5">
+              Sample House 3
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="numeral text-[16px] tab-num leading-none" style={{ fontWeight: 600 }}>
+              {DEMO_PHOTO_SET_SAMPLE_HOUSE_3.length}
+            </p>
+            <p className="mono text-[9px] uppercase tracking-[0.14em] text-mute">photos</p>
+          </div>
+        </div>
 
-      {photos.length > 0 && (
-        <div className="grid grid-cols-2 gap-2">
-          {photos.map((photo, index) => (
-            <figure
-              key={photo.id}
-              className="group relative aspect-[4/3] overflow-hidden rounded-lg bg-surface-2"
+        <div className="grid grid-cols-3 gap-1.5">
+          {DEMO_PHOTO_SET_SAMPLE_HOUSE_3.slice(0, 3).map((ref) => (
+            <img
+              key={ref.name}
+              src={ref.url}
+              alt=""
+              className="aspect-[4/3] w-full rounded-md object-cover"
               style={{ border: "1px solid var(--rule)" }}
-            >
-              <img src={photo.url} alt={`Imported rooftop ${index + 1}`} className="h-full w-full object-cover" />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-ink/75 px-2 py-1.5 text-[10px] text-paper backdrop-blur">
-                <span className="block truncate">{photo.name}</span>
-                <span className="text-paper/65">{formatSize(photo.size)}</span>
-              </figcaption>
-              <button
-                type="button"
-                onClick={() => onRemove(photo.id)}
-                disabled={isProcessing}
-                className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-ink/80 text-paper transition-colors hover:bg-crimson disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label={`Remove ${photo.name}`}
-              >
-                <Trash weight="bold" size={13} />
-              </button>
-            </figure>
+            />
           ))}
         </div>
-      )}
+
+        <button
+          type="button"
+          onClick={onLoadDemo}
+          disabled={isProcessing || loading}
+          className="flex h-8 w-full items-center justify-center gap-2 rounded-lg bg-ink px-4 text-[11.5px] font-extrabold tracking-tight text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:bg-dim"
+        >
+          {loading ? (
+            <ArrowsClockwise className="animate-spin" weight="bold" size={12} />
+          ) : (
+            <ImageSquare weight="duotone" size={13} />
+          )}
+          {loading ? "Loading…" : photos.length > 0 ? "Reload photos" : "Load photos"}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        {photos.length === 0
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={`slot-${i}`}
+                className="aspect-[4/3] rounded-lg bg-surface-2"
+                style={{ border: "1px dashed var(--rule)" }}
+              />
+            ))
+          : photos.map((photo, index) => (
+              <figure
+                key={photo.id}
+                className="group relative aspect-[4/3] overflow-hidden rounded-lg bg-surface-2"
+                style={{ border: "1px solid var(--rule)" }}
+              >
+                <img src={photo.url} alt={`Imported rooftop ${index + 1}`} className="h-full w-full object-cover" />
+                <figcaption className="absolute inset-x-0 bottom-0 bg-ink/75 px-2 py-1.5 text-[10px] text-paper backdrop-blur">
+                  <span className="block truncate">{photo.name}</span>
+                  <span className="text-paper/65">{formatSize(photo.size)}</span>
+                </figcaption>
+                <button
+                  type="button"
+                  onClick={() => onRemove(photo.id)}
+                  disabled={isProcessing}
+                  className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-ink/80 text-paper transition-colors hover:bg-crimson disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label={`Remove ${photo.name}`}
+                >
+                  <Trash weight="bold" size={13} />
+                </button>
+              </figure>
+            ))}
+      </div>
 
       <div className="rounded-xl bg-paper p-3" style={{ border: "1px solid var(--rule)" }}>
         <div className="mb-2.5 flex items-center justify-between">
-          <span className="text-[13px] font-extrabold tracking-tight text-ink">Generation</span>
-          <span className="rounded-full bg-leaf-tint px-2.5 py-1 mono text-[9.5px] uppercase tracking-[0.16em] text-leaf-deep">
-            Demo mode
+          <span className="text-[12.5px] font-extrabold tracking-tight text-ink">
+            {isProcessing ? "Generating…" : stage === "done" ? "Ready" : "Ready to generate"}
+          </span>
+          <span className="mono text-[10px] uppercase tracking-[0.14em] text-mute tab-num">
+            {progress}%
           </span>
         </div>
 
@@ -295,18 +339,18 @@ function ImportPanel({
                   border: "1px solid var(--rule)",
                 }}
               >
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-surface-2 text-leaf-deep">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-surface-2 text-leaf-deep mono text-[10px] font-bold">
                   {complete || (stage === "done" && index === 2) ? (
-                    <CheckCircle weight="fill" size={17} />
+                    <CheckCircle weight="fill" size={13} />
                   ) : active && isProcessing ? (
-                    <ArrowsClockwise className="animate-spin" weight="bold" size={16} />
+                    <ArrowsClockwise className="animate-spin" weight="bold" size={12} />
                   ) : (
-                    <Sparkle weight="duotone" size={16} />
+                    <span>{index + 1}</span>
                   )}
                 </span>
                 <span>
-                  <span className="block text-[12px] font-bold text-ink">{label}</span>
-                  <span className="block text-[10.5px] text-mute">{description}</span>
+                  <span className="block text-[11.5px] font-bold text-ink">{label}</span>
+                  <span className="block text-[10px] text-mute">{description}</span>
                 </span>
               </li>
             );
@@ -321,10 +365,14 @@ function ImportPanel({
           type="button"
           onClick={onGenerate}
           disabled={photos.length === 0 || isProcessing}
-          className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-ink px-4 text-[12.5px] font-extrabold tracking-tight text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:bg-dim"
+          className="mt-2.5 flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-ink px-4 text-[12px] font-extrabold tracking-tight text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:bg-dim"
         >
           {isProcessing ? <ArrowsClockwise className="animate-spin" weight="bold" size={14} /> : <Cube weight="duotone" size={15} />}
-          {isProcessing ? "Processing photos" : stage === "done" ? "Render again" : "Generate 3D render"}
+          {isProcessing
+            ? `Generating · ${progress}%`
+            : stage === "done"
+            ? "Regenerate"
+            : "Generate 3D model"}
         </button>
       </div>
     </div>
@@ -368,20 +416,24 @@ function EmptyState({ stage, progress, photoCount }: { stage: Stage; progress: n
   const hasPhotos = photoCount > 0;
 
   return (
-    <div className="flex h-full min-h-[420px] flex-col items-center justify-center gap-4 px-6 text-center">
-      <div className="grid h-16 w-16 place-items-center rounded-2xl bg-surface-2 text-leaf-deep">
-        {isProcessing ? <ArrowsClockwise className="animate-spin" weight="bold" size={30} /> : <Cube weight="duotone" size={30} />}
+    <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
+      <div className="grid h-12 w-12 place-items-center rounded-xl bg-surface-2 text-leaf-deep">
+        {isProcessing ? <ArrowsClockwise className="animate-spin" weight="bold" size={22} /> : <Cube weight="duotone" size={22} />}
       </div>
       <div>
-        <h3 className="text-[16px] font-extrabold text-ink">
-          {isProcessing ? "Building 3D render" : hasPhotos ? "Photos imported" : "Awaiting photos"}
-        </h3>
-        <p className="mt-2 max-w-md text-[12.5px] leading-6 text-mute">
+        <h3 className="text-[14px] font-extrabold text-ink">
           {isProcessing
-            ? "The demo is processing the uploaded references and preparing the textured model."
+            ? "Building your 3D model…"
             : hasPhotos
-              ? "Start generation to show the processing state and reveal the 3D result."
-              : "Import rooftop photos to begin the demo flow."}
+            ? "Ready to generate"
+            : "Your model will appear here"}
+        </h3>
+        <p className="mt-1.5 max-w-md text-[11.5px] leading-5 text-mute">
+          {isProcessing
+            ? "Reconstructing roof geometry…"
+            : hasPhotos
+            ? "Click Generate 3D model to see the result."
+            : "Load the sample dataset on the right to start."}
         </p>
       </div>
       {isProcessing && (
@@ -411,9 +463,9 @@ function ModelViewer({
   photoCount: number;
 }) {
   return (
-    <section className="relative min-h-[420px] overflow-hidden rounded-xl bg-blueprint" style={{ border: "1px solid var(--rule)" }}>
+    <section className="relative h-[320px] overflow-hidden rounded-xl bg-blueprint" style={{ border: "1px solid var(--rule)" }}>
       <div className="pointer-events-none absolute left-4 top-4 z-10 rounded-full bg-leaf-tint px-3 py-1.5 mono text-[10px] uppercase tracking-[0.16em] text-leaf-deep">
-        3D preview · Hunyuan GLB
+        3D preview
       </div>
 
       {modelUrl ? (

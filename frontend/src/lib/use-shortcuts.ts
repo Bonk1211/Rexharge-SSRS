@@ -5,7 +5,6 @@ import { useDemoDialog } from "@/store/demo-dialog-store";
 const ROUTES: Record<string, string> = {
   "2": "/app/workspace/3d-converter",
   "3": "/app/clients",
-  "4": "/app",
 };
 
 export function useShortcuts() {

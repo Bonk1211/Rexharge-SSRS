@@ -8,6 +8,11 @@ import {
   type NewProjectInput,
 } from '../lib/projects-api'
 import type { Project } from '../data/mock-projects'
+import {
+  buildGaugeValues,
+  buildHourlyPowerCurve,
+  buildMonthlyYieldVsTarget,
+} from '../lib/dashboard-series'
 
 // ---------- query keys ----------
 
@@ -45,6 +50,15 @@ export function usePortfolioStats() {
     totalProjects:  projects.length,
     readyProjects:  ready.length,
     processingCount: projects.filter((p: Project) => p.status === 'processing').length,
+  }
+}
+
+export function usePortfolioCharts() {
+  const { data: projects = [] } = useProjects()
+  return {
+    powerCurve: buildHourlyPowerCurve(projects),
+    monthly: buildMonthlyYieldVsTarget(projects),
+    gauges: buildGaugeValues(projects),
   }
 }
 

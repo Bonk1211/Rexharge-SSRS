@@ -9,7 +9,6 @@ import Clients from "./pages/Clients";
 import ProjectDetail from "./pages/ProjectDetail";
 import NewProject from "./pages/NewProject";
 import Workspace3DConverter from "./pages/Workspace3DConverter";
-import Report from "./pages/Report.stub";
 import "./styles/globals.css";
 
 const queryClient = new QueryClient()
@@ -26,7 +25,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="projects/new/*" element={<NewProject />} />
           <Route path="workspace/3d-converter" element={<Workspace3DConverter />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
-          <Route path="projects/:id/report" element={<Report />} />
           <Route path="*" element={<Navigate to="/app" replace />} />
         </Route>
       </Routes>

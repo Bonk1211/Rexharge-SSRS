@@ -1,0 +1,9 @@
+{
+  "_placeholder": true,
+  "site": {
+    "latitude": 3.106827,
+    "longitude": 101.624123,
+    "scenarioName": "Star Grocer",
+    "modelUrl": "https://solar.limziyang.ml/static/models/video_5/3DModel.glb"
+  }
+}

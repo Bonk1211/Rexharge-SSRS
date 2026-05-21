@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, Download } from "@/icons";
-import { useProject, useSignedUrl } from "@/store/projects-store";
+import { ArrowUpRight } from "@/icons";
+import { useProject } from "@/store/projects-store";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import StatusPill from "@/components/chrome/StatusPill";
 import SectionTabs from "@/components/chrome/SectionTabs";
@@ -9,19 +9,30 @@ import ExportedSceneViewer from "@/components/viewer/ExportedSceneViewer";
 import MeshViewer from "@/components/viewer/MeshViewer";
 import SunPathScrubber from "@/components/viewer/SunPathScrubber";
 import MetricStack from "@/components/metrics/MetricStack";
-import ParamPanel from "@/components/controls/ParamPanel";
-import PlaneSummary from "@/components/data/PlaneSummary";
-import PanelSchedule from "@/components/data/PanelSchedule";
-import MonthlyYieldChart from "@/components/data/MonthlyYieldChart";
-import AssumptionsCard from "@/components/data/AssumptionsCard";
-import { loadProjectReport, type ProjectReport } from "@/data/project-reports";
+import ProjectDashboard from "@/components/data/ProjectDashboard";
+import {
+  loadProjectReport,
+  isPlaceholderReport,
+  type FullProjectReport,
+} from "@/data/project-reports";
+import type { Project } from "@/data/mock-projects";
+import { tariffCodeFromString } from "@/data/case-study-buildings";
+import { useGlbUrl } from "@/lib/glb-url";
+
+function buildSimulatorUrl(p: Project): string {
+  const params = new URLSearchParams();
+  if (p.modelGlbPath) params.set("model", p.modelGlbPath);
+  params.set("lat", String(p.lat));
+  params.set("lng", String(p.lon));
+  if (p.monthlyUsageKwh != null) params.set("usage", String(p.monthlyUsageKwh));
+  const code = tariffCodeFromString(p.tariffType);
+  if (code) params.set("tariff", code);
+  return `${__SIMULATOR_URL__}/simulator?${params.toString()}`;
+}
 
 const SECTIONS = [
   { id: "sec-layout", label: "Layout", caption: "viewer · panels" },
-  { id: "sec-yield", label: "Yield", caption: "kWp · kWh · RM" },
-  { id: "sec-roof", label: "Roof", caption: "planes · obstacles" },
-  { id: "sec-schedule", label: "Schedule", caption: "monthly · panel list" },
-  { id: "sec-report", label: "Report", caption: "PDF" },
+  { id: "sec-dashboard", label: "Dashboard", caption: "system · live · finance" },
 ];
 
 export default function ProjectDetail() {
@@ -29,12 +40,9 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
 
   const { data: project, isLoading } = useProject(id ?? '');
-  const { data: glbUrl } = useSignedUrl(
-    project?.modelGlbPath ? 'project-models' : undefined,
-    project?.modelGlbPath ?? undefined,
-  );
+  const glbUrl = useGlbUrl(project?.modelGlbPath);
 
-  const [report, setReport] = useState<ProjectReport | null>(null);
+  const [report, setReport] = useState<FullProjectReport | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
 
   useEffect(() => {
@@ -42,11 +50,23 @@ export default function ProjectDetail() {
     let cancelled = false;
     setReport(null);
     setReportLoading(true);
-    loadProjectReport(project.reportId).then((loadedReport) => {
-      if (cancelled) return;
-      setReport(loadedReport);
-      setReportLoading(false);
-    });
+    loadProjectReport(project.reportId)
+      .then((loadedReport) => {
+        if (cancelled) return;
+        setReport(
+          isPlaceholderReport(loadedReport)
+            ? null
+            : (loadedReport as FullProjectReport | null),
+        );
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.warn("[ProjectDetail] failed to load report:", err);
+        setReport(null);
+      })
+      .finally(() => {
+        if (!cancelled) setReportLoading(false);
+      });
     return () => { cancelled = true; };
   }, [project?.reportId]);
 
@@ -90,24 +110,15 @@ export default function ProjectDetail() {
 
         <div className="flex items-center gap-2">
           <a
-            href={__SIMULATOR_URL__}
+            href={buildSimulatorUrl(project)}
             target="_blank"
             rel="noreferrer"
-            className="px-3.5 h-10 inline-flex items-center gap-2 rounded-full text-[12px] font-bold text-ink-2"
-            style={{ background: "var(--surface-2)" }}
+            className="px-3.5 h-10 inline-flex items-center gap-2 rounded-full text-[12px] font-bold text-paper"
+            style={{ background: "var(--ink)" }}
           >
             <ArrowUpRight weight="duotone" size={14} />
             Open in simulator
           </a>
-          <button
-            className="px-4 h-10 inline-flex items-center gap-2 rounded-full text-[12.5px] font-bold tracking-tight text-paper"
-            style={{ background: "var(--ink)" }}
-            onClick={() => navigate(`/app/projects/${project.id}/report`)}
-          >
-            <Download weight="bold" size={14} />
-            Download report
-            <ArrowRight weight="bold" size={12} />
-          </button>
         </div>
       </header>
 
@@ -145,36 +156,10 @@ export default function ProjectDetail() {
           </div>
         </section>
 
-        {/* SECTION 2 — Yield */}
-        <section id="sec-yield" className="scroll-mt-32 mb-12">
-          <SectionHeader index="02" title="Yield" subtitle="Per-panel POA × shading × Malaysia thermal derate." />
-          <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-5">
-            <MonthlyYieldChart data={project.monthlyKwh} />
-            <AssumptionsCard />
-          </div>
-        </section>
-
-        {/* SECTION 3 — Roof */}
-        <section id="sec-roof" className="scroll-mt-32 mb-12">
-          <SectionHeader index="03" title="Roof analysis" subtitle="Plane segmentation, obstacles, layout parameters." />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <PlaneSummary />
-            <ParamPanel />
-          </div>
-        </section>
-
-        {/* SECTION 4 — Schedule */}
-        <section id="sec-schedule" className="scroll-mt-32 mb-12">
-          <SectionHeader index="04" title="Panel schedule" subtitle="Per-module orientation, shading factor, kWh contribution." />
-          <PanelSchedule />
-        </section>
-
-        {/* SECTION 5 — Report */}
-        <section id="sec-report" className="scroll-mt-32 mb-12">
-          <SectionHeader index="05" title="Report" subtitle="WeasyPrint PDF · Playwright snapshots · 8 pp." />
-          <ReportCallout
-            onOpen={() => navigate(`/app/projects/${project.id}/report`)}
-          />
+        {/* SECTION 2 — Dashboard */}
+        <section id="sec-dashboard" className="scroll-mt-32 mb-12">
+          <SectionHeader index="02" title="Dashboard" subtitle="System summary · real-time · environmental · loss · inverter · finance." />
+          <ProjectDashboard project={project} />
         </section>
 
         <HairlineRule className="mt-16" />
@@ -204,36 +189,6 @@ const SectionHeader = ({
       </h2>
       <span className="mono text-[10.5px] uppercase tracking-[0.16em] text-mute">{subtitle}</span>
     </div>
-  </div>
-);
-
-const ReportCallout = ({ onOpen }: { onOpen: () => void }) => (
-  <div
-    className="rounded-2xl p-7 flex items-center justify-between gap-6 flex-wrap"
-    style={{
-      background: "var(--ink)",
-      color: "var(--paper)",
-      backgroundImage:
-        "repeating-linear-gradient(135deg, transparent 0 24px, color-mix(in srgb, var(--leaf) 12%, transparent) 24px 25px)",
-    }}
-  >
-    <div>
-      <p className="mono text-[10px] uppercase tracking-[0.18em]" style={{ color: "var(--leaf)" }}>
-        Engineering report ready
-      </p>
-      <p className="numeral text-[28px] leading-tight mt-1" style={{ fontWeight: 600 }}>
-        Cover · summary · planes · layout · charts · finances · assumptions
-      </p>
-    </div>
-    <button
-      onClick={onOpen}
-      className="inline-flex items-center gap-2 px-5 h-11 rounded-full text-[13px] font-bold"
-      style={{ background: "var(--leaf)", color: "var(--ink)" }}
-    >
-      <Download weight="bold" size={14} />
-      Download PDF
-      <ArrowRight weight="bold" size={13} />
-    </button>
   </div>
 );
 

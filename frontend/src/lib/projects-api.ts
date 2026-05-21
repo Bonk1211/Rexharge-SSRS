@@ -66,6 +66,9 @@ function rowToProject(row: Record<string, unknown>): Project {
     modelGlbPath:       (row.model_glb_path as string | null) ?? null,
     measurementImgPath: (row.measurement_img_path as string | null) ?? null,
     dataJsonPath:       (row.data_json_path as string | null) ?? null,
+    thumbnailUrl:       (row.thumbnail_url as string | null) ?? null,
+    monthlyUsageKwh:    row.monthly_usage_kwh == null ? undefined : num(row.monthly_usage_kwh),
+    tariffType:         (row.tariff_type as string | null) ?? undefined,
   }
 }
 
@@ -147,6 +150,9 @@ export async function updateProject(id: string, patch: Partial<Project> & Record
     dataJsonPath: 'data_json_path',
     measurementImgPath: 'measurement_img_path',
     modelGlbPath: 'model_glb_path',
+    thumbnailUrl: 'thumbnail_url',
+    monthlyUsageKwh: 'monthly_usage_kwh',
+    tariffType: 'tariff_type',
   }
   for (const [k, v] of Object.entries(patch)) {
     snakePatch[camelToSnake[k] ?? k] = v

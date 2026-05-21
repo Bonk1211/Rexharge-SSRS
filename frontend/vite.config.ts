@@ -28,6 +28,13 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5174,
       host: true,
+      proxy: {
+        "/cs-assets": {
+          target: "https://solar.limziyang.ml",
+          changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/cs-assets/, "/static"),
+        },
+      },
     },
   };
 });
