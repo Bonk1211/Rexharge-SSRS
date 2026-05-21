@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowUpRight } from "@/icons";
-import { useProject, useSignedUrl } from "@/store/projects-store";
+import { useProject } from "@/store/projects-store";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import StatusPill from "@/components/chrome/StatusPill";
 import SectionTabs from "@/components/chrome/SectionTabs";
@@ -10,7 +10,25 @@ import MeshViewer from "@/components/viewer/MeshViewer";
 import SunPathScrubber from "@/components/viewer/SunPathScrubber";
 import MetricStack from "@/components/metrics/MetricStack";
 import ProjectDashboard from "@/components/data/ProjectDashboard";
-import { loadProjectReport, type ProjectReport } from "@/data/project-reports";
+import {
+  loadProjectReport,
+  isPlaceholderReport,
+  type FullProjectReport,
+} from "@/data/project-reports";
+import type { Project } from "@/data/mock-projects";
+import { tariffCodeFromString } from "@/data/case-study-buildings";
+import { useGlbUrl } from "@/lib/glb-url";
+
+function buildSimulatorUrl(p: Project): string {
+  const params = new URLSearchParams();
+  if (p.modelGlbPath) params.set("model", p.modelGlbPath);
+  params.set("lat", String(p.lat));
+  params.set("lng", String(p.lon));
+  if (p.monthlyUsageKwh != null) params.set("usage", String(p.monthlyUsageKwh));
+  const code = tariffCodeFromString(p.tariffType);
+  if (code) params.set("tariff", code);
+  return `${__SIMULATOR_URL__}/simulator?${params.toString()}`;
+}
 
 const SECTIONS = [
   { id: "sec-layout", label: "Layout", caption: "viewer · panels" },
@@ -22,12 +40,9 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
 
   const { data: project, isLoading } = useProject(id ?? '');
-  const { data: glbUrl } = useSignedUrl(
-    project?.modelGlbPath ? 'project-models' : undefined,
-    project?.modelGlbPath ?? undefined,
-  );
+  const glbUrl = useGlbUrl(project?.modelGlbPath);
 
-  const [report, setReport] = useState<ProjectReport | null>(null);
+  const [report, setReport] = useState<FullProjectReport | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
 
   useEffect(() => {
@@ -35,11 +50,23 @@ export default function ProjectDetail() {
     let cancelled = false;
     setReport(null);
     setReportLoading(true);
-    loadProjectReport(project.reportId).then((loadedReport) => {
-      if (cancelled) return;
-      setReport(loadedReport);
-      setReportLoading(false);
-    });
+    loadProjectReport(project.reportId)
+      .then((loadedReport) => {
+        if (cancelled) return;
+        setReport(
+          isPlaceholderReport(loadedReport)
+            ? null
+            : (loadedReport as FullProjectReport | null),
+        );
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.warn("[ProjectDetail] failed to load report:", err);
+        setReport(null);
+      })
+      .finally(() => {
+        if (!cancelled) setReportLoading(false);
+      });
     return () => { cancelled = true; };
   }, [project?.reportId]);
 
@@ -83,7 +110,7 @@ export default function ProjectDetail() {
 
         <div className="flex items-center gap-2">
           <a
-            href={__SIMULATOR_URL__}
+            href={buildSimulatorUrl(project)}
             target="_blank"
             rel="noreferrer"
             className="px-3.5 h-10 inline-flex items-center gap-2 rounded-full text-[12px] font-bold text-paper"

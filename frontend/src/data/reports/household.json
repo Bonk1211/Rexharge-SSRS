@@ -1,0 +1,9 @@
+{
+  "_placeholder": true,
+  "site": {
+    "latitude": 3.108156,
+    "longitude": 101.622418,
+    "scenarioName": "Household",
+    "modelUrl": "https://solar.limziyang.ml/static/models/video_4/3DModel.glb"
+  }
+}

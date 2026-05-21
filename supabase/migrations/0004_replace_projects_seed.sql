@@ -1,7 +1,13 @@
--- Canonical demo seed: 5 real drone-photogrammetry case studies.
--- Idempotent against migration 0004_replace_projects_seed.sql — uses the
--- same fixed UUIDs so re-running this overwrites in place.
--- BEFORE RUNNING: confirm dev_owner uuid matches your dev user.
+-- 0004: add usage/tariff/thumbnail columns and replace fabricated seed
+-- with the 5 real drone-photogrammetry case studies.
+--
+-- WARNING: the `delete` below removes ALL existing rows under dev_owner.
+-- Confirm with `select id, name from projects where owner_id = '<dev_owner>';`
+-- before applying. Scope tighter by name if any real customer rows live there.
+
+alter table projects add column if not exists monthly_usage_kwh numeric;
+alter table projects add column if not exists tariff_type       text;
+alter table projects add column if not exists thumbnail_url     text;
 
 do $$
 declare
@@ -76,5 +82,4 @@ begin
       'https://solar.limziyang.ml/static/measurement/eco_horizon.png',
       'https://solar.limziyang.ml/static/ECO_HORIZON.PNG',
       700, 'domestic');
-
 end $$;

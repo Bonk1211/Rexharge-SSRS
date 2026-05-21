@@ -2,6 +2,7 @@ import MetricTile from "@/components/metrics/MetricTile";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import { SIM_CONSTANTS } from "@/lib/sim-constants";
 import type { Project } from "@/data/mock-projects";
+import { formatTariff } from "@/data/case-study-buildings";
 
 const C = SIM_CONSTANTS;
 
@@ -172,7 +173,7 @@ function FinancialBlock({ project, m }: { project: Project; m: Derived }) {
               className="h-10 rounded-lg px-3 flex items-center text-[13px] text-ink"
               style={{ border: "1px solid var(--rule)", background: "var(--surface-2)" }}
             >
-              {project.tariffType ?? "—"}
+              {formatTariff(project.tariffType)}
             </div>
           </Field>
           <Field label="Monthly Usage">
