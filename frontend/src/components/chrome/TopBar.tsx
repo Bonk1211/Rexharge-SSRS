@@ -9,17 +9,16 @@ import { useSearchStore } from "@/store/search-store";
  * Brand wordmark lives in the FeatureRail; this bar is purely operational. */
 
 const ROUTE_TITLES: Array<{ test: (p: string) => boolean; crumbs: (path: string, id?: string) => string[] }> = [
-  { test: (p) => p === "/", crumbs: () => ["Workspace", "Overview"] },
-  { test: (p) => p.startsWith("/workspace/3d-converter"), crumbs: () => ["Workspace", "3D Converter"] },
-  { test: (p) => p.startsWith("/projects/new"), crumbs: () => ["Workspace", "Projects", "New project"] },
+  { test: (p) => p === "/app" || p === "/app/", crumbs: () => ["Workspace", "Overview"] },
+  { test: (p) => p.startsWith("/app/workspace/3d-converter"), crumbs: () => ["Workspace", "3D Converter"] },
+  { test: (p) => p.startsWith("/app/projects/new"), crumbs: () => ["Workspace", "Projects", "New project"] },
   { test: (p) => p.includes("/analysis"), crumbs: (_, id) => ["Workspace", "Projects", id ?? "—", "Analysis"] },
   { test: (p) => p.includes("/report"), crumbs: (_, id) => ["Workspace", "Projects", id ?? "—", "Report"] },
-  { test: (p) => p.startsWith("/captures"), crumbs: () => ["Captures", "Recent uploads"] },
-  { test: (p) => p.startsWith("/reports"), crumbs: () => ["Reports", "Engineering PDFs"] },
-  { test: (p) => p.startsWith("/tariffs"), crumbs: () => ["Tariffs", "TNB · ATAP NEM 3.0"] },
-  { test: (p) => p.startsWith("/portfolio"), crumbs: () => ["Portfolio", "All sites"] },
-  { test: (p) => p.startsWith("/settings"), crumbs: () => ["Settings", "Workspace"] },
-  { test: (p) => p.startsWith("/help"), crumbs: () => ["Help", "Docs · shortcuts"] },
+  { test: (p) => p.startsWith("/app/captures"), crumbs: () => ["Captures", "Recent uploads"] },
+  { test: (p) => p.startsWith("/app/reports"), crumbs: () => ["Reports", "Engineering PDFs"] },
+  { test: (p) => p.startsWith("/app/portfolio"), crumbs: () => ["Portfolio", "All sites"] },
+  { test: (p) => p.startsWith("/app/settings"), crumbs: () => ["Settings", "Workspace"] },
+  { test: (p) => p.startsWith("/app/help"), crumbs: () => ["Help", "Docs · shortcuts"] },
 ];
 
 export default function TopBar() {
@@ -58,7 +57,7 @@ export default function TopBar() {
             Bulk-import drone set
           </button>
           <Link
-            to="/projects/new"
+            to="/app/projects/new"
             className="inline-flex items-center gap-2 px-3.5 h-9 rounded-full text-[12px] font-bold tracking-tight text-paper transition-colors"
             style={{ background: "var(--ink)" }}
           >

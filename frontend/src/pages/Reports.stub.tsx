@@ -24,7 +24,7 @@ export default function Reports() {
         {ready.map((p) => (
           <Link
             key={p.id}
-            to={`/projects/${p.id}/report`}
+            to={`/app/projects/${p.id}/report`}
             className="group bg-surface rounded-2xl p-5 flex flex-col gap-4 transition-colors hover:bg-leaf-tint/40"
             style={{ border: "1px solid var(--rule)" }}
           >

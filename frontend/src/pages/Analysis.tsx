@@ -76,7 +76,7 @@ export default function Analysis() {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <button
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/app")}
                 className="mono text-[10px] uppercase tracking-[0.18em] text-mute hover:text-ink"
               >
                 ← Workspace
@@ -108,7 +108,7 @@ export default function Analysis() {
             <button
               className="px-4 h-10 inline-flex items-center gap-2 rounded-full text-[12.5px] font-bold tracking-tight text-paper"
               style={{ background: "var(--ink)" }}
-              onClick={() => navigate(`/projects/${project.id}/report`)}
+              onClick={() => navigate(`/app/projects/${project.id}/report`)}
             >
               <Download weight="bold" size={14} />
               Download report
@@ -179,13 +179,13 @@ export default function Analysis() {
           <section id="sec-report" className="scroll-mt-32 mb-12">
             <SectionHeader index="05" title="Report" subtitle="WeasyPrint PDF · Playwright snapshots · 8 pp." />
             <ReportCallout
-              onOpen={() => navigate(`/projects/${project.id}/report`)}
+              onOpen={() => navigate(`/app/projects/${project.id}/report`)}
             />
           </section>
 
           <HairlineRule className="mt-16" />
           <p className="mt-4 mono text-[10px] uppercase tracking-[0.18em] text-mute">
-            RexCharge SLS v1.0 · pvlib + PVGIS TMY · TNB 2024 tariff · ATAP NEM 3.0
+            RexCharge SLS v1.0 · pvlib + PVGIS TMY · ATAP NEM 3.0
           </p>
         </div>
       </main>

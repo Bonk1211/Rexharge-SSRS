@@ -11,8 +11,6 @@ import type { IntakeMode } from "@/data/mock-projects";
 
 // ---------- types ----------
 
-type Tariff = "domestic" | "non_domestic_lv";
-
 interface FileEntry {
   kind: "glb" | "measurement" | "data_json" | "source_video" | "source_photo";
   file: File;
@@ -24,7 +22,6 @@ interface FormData {
   address: string;
   lat: string;
   lon: string;
-  tariff: Tariff;
   intakeMode: IntakeMode;
   files: FileEntry[];
 }
@@ -55,7 +52,6 @@ export default function NewProject() {
     address: "",
     lat: "",
     lon: "",
-    tariff: "domestic",
     intakeMode: "demo",
     files: [],
   });
@@ -122,7 +118,6 @@ export default function NewProject() {
         address: form.address.trim() || undefined,
         lat: parseFloat(form.lat),
         lon: parseFloat(form.lon),
-        tariff: form.tariff,
         intakeMode: form.intakeMode,
         status: "draft",
       });
@@ -146,7 +141,7 @@ export default function NewProject() {
 
       await logEvent(project.id, "created");
       toast.success("Project created");
-      navigate(`/projects/${project.id}/analysis`);
+      navigate(`/app/projects/${project.id}/analysis`);
     } catch (err) {
       const msg =
         err instanceof Error ? err.message
@@ -217,7 +212,7 @@ export default function NewProject() {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/app")}
               className="inline-flex items-center gap-2 mono text-[11px] uppercase tracking-[0.18em] text-mute hover:text-ink"
             >
               <ArrowLeft weight="bold" size={12} /> Cancel
@@ -302,25 +297,6 @@ function Step0({ form, set }: { form: FormData; set: <K extends keyof FormData>(
         </Field>
       </div>
 
-      <Field label="Tariff">
-        <div className="flex gap-3">
-          {(["domestic", "non_domestic_lv"] as Tariff[]).map((t) => (
-            <button
-              key={t}
-              onClick={() => set("tariff", t)}
-              className="flex-1 h-11 rounded-xl text-[13px] font-semibold transition-colors"
-              style={{
-                border: "1px solid var(--rule)",
-                background: form.tariff === t ? "var(--leaf-tint)" : "var(--surface)",
-                color: form.tariff === t ? "var(--leaf-deep)" : "var(--ink-2)",
-                outline: form.tariff === t ? "1.5px solid var(--leaf)" : "none",
-              }}
-            >
-              {t === "domestic" ? "Domestic" : "Non-Domestic LV"}
-            </button>
-          ))}
-        </div>
-      </Field>
     </div>
   );
 }
@@ -531,7 +507,6 @@ function Step3({ form }: { form: FormData }) {
           <ReviewRow label="Address" value={form.address || "—"} />
           <ReviewRow label="Latitude" value={form.lat || "—"} />
           <ReviewRow label="Longitude" value={form.lon || "—"} />
-          <ReviewRow label="Tariff" value={form.tariff === "domestic" ? "Domestic" : "Non-Domestic LV"} />
           <ReviewRow label="Intake" value={intakeLabel} />
         </div>
 

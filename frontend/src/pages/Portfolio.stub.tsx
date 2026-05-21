@@ -53,18 +53,17 @@ export default function Portfolio() {
               >
                 <td className="px-5 py-3 text-leaf-deep">{p.id}</td>
                 <td className="px-3 py-3 text-ink-2 normal-case tracking-tight font-sans">
-                  <Link to={`/projects/${p.id}/analysis`} className="font-bold text-ink hover:text-leaf-deep">
+                  <Link to={`/app/projects/${p.id}/analysis`} className="font-bold text-ink hover:text-leaf-deep">
                     {p.name}
                   </Link>
                 </td>
-                <td className="px-3 py-3 text-ink">{p.tariff === "domestic" ? "Domestic" : "Non-Dom LV"}</td>
                 <td className="px-3 py-3 text-right">{p.kwp ? fmtKWp(p.kwp) : "—"}</td>
                 <td className="px-3 py-3 text-right">{p.annualKwh ? fmtKWh(p.annualKwh) : "—"}</td>
                 <td className="px-3 py-3 text-right">{p.annualSavingsRm ? fmtRM(p.annualSavingsRm, { compact: true }) : "—"}</td>
                 <td className="px-3 py-3 text-right">{p.paybackYears ? fmtYears(p.paybackYears) : "—"}</td>
                 <td className="px-3 py-3"><StatusPill status={p.status} size="sm" /></td>
                 <td className="px-5 py-3 text-right">
-                  <Link to={`/projects/${p.id}/analysis`} className="text-mute hover:text-ink inline-flex">
+                  <Link to={`/app/projects/${p.id}/analysis`} className="text-mute hover:text-ink inline-flex">
                     <ArrowUpRight weight="bold" size={14} />
                   </Link>
                 </td>

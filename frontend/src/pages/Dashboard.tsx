@@ -36,8 +36,7 @@ export default function Dashboard() {
                 </h1>
                 <p className="mt-3 text-[14px] text-mute max-w-[52ch]">
                   Six rooftop projects across Peninsular Malaysia. Yields modelled on PVGIS TMY,
-                  derated for 50&nbsp;°C cell temperature, settled against TNB tariff blocks &amp; ATAP
-                  NEM 3.0 sell-back.
+                  derated for 50&nbsp;°C cell temperature, settled against ATAP NEM 3.0 sell-back.
                 </p>
               </div>
 
@@ -154,7 +153,7 @@ export default function Dashboard() {
                 Create your first project to see yield estimates and 3D analysis here.
               </p>
               <Link
-                to="/projects/new"
+                to="/app/projects/new"
                 className="mt-2 px-5 h-10 inline-flex items-center gap-2 rounded-full text-[13px] font-bold tracking-tight text-paper"
                 style={{ background: "var(--ink)" }}
               >
@@ -191,7 +190,7 @@ export default function Dashboard() {
 
 const NewProjectCard = ({ index }: { index: number }) => (
   <Link
-    to="/projects/new"
+    to="/app/projects/new"
     className="group relative rounded-2xl flex flex-col items-center justify-center gap-3 p-8 animate-riseIn"
     style={{
       border: "1.5px dashed color-mix(in srgb, var(--leaf) 40%, transparent)",

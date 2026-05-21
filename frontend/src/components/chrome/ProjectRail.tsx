@@ -82,7 +82,7 @@ export default function ProjectRail() {
           return (
             <li key={p.id}>
               <Link
-                to={`/projects/${p.id}/analysis`}
+                to={`/app/projects/${p.id}/analysis`}
                 className="block group rounded-lg px-2.5 py-2 transition-colors relative"
                 style={{
                   background: active ? "var(--leaf-tint)" : "transparent",
@@ -126,7 +126,7 @@ export default function ProjectRail() {
 
       <div className="p-3 border-t" style={{ borderColor: "var(--rule)" }}>
         <Link
-          to="/projects/new"
+          to="/app/projects/new"
           className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg group transition-colors"
           style={{ background: "var(--ink)", color: "var(--paper)" }}
         >

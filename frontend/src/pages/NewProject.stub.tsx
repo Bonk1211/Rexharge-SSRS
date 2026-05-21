@@ -51,7 +51,7 @@ export default function NewProject() {
         </div>
 
         <Link
-          to="/"
+          to="/app"
           className="mt-6 inline-flex items-center gap-2 mono text-[11px] uppercase tracking-[0.18em] text-leaf-deep"
         >
           ← Back to workspace

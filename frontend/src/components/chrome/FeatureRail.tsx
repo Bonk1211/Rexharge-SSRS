@@ -9,7 +9,6 @@ import {
   Sparkle,
   User,
 } from "@/icons";
-import { RinggitGlyph } from "@/icons";
 import CompactMark from "./CompactMark";
 
 interface NavItem {
@@ -23,51 +22,44 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   {
-    to: "/",
+    to: "/app",
     label: "Workspace",
     hint: "Portfolio overview",
     shortcut: "1",
     Icon: ({ size, weight }) => <House size={size} weight={weight} />,
   },
   {
-    to: "/captures",
+    to: "/app/captures",
     label: "Captures",
     hint: "Drone uploads · photo sets",
     shortcut: "2",
     Icon: ({ size, weight }) => <Stack size={size} weight={weight} />,
   },
   {
-    to: "/reports",
+    to: "/app/reports",
     label: "Reports",
     hint: "Engineering PDFs",
     shortcut: "3",
     Icon: ({ size, weight }) => <ListChecks size={size} weight={weight} />,
   },
   {
-    to: "/tariffs",
-    label: "Tariffs",
-    hint: "TNB blocks · ATAP NEM 3.0",
-    shortcut: "4",
-    Icon: ({ size, className }) => <RinggitGlyph size={size} className={className} />,
-  },
-  {
-    to: "/portfolio",
+    to: "/app/portfolio",
     label: "Portfolio",
     hint: "All sites · all kWp",
-    shortcut: "5",
+    shortcut: "4",
     Icon: ({ size, weight }) => <Buildings size={size} weight={weight} />,
   },
 ];
 
 const FOOTER: NavItem[] = [
   {
-    to: "/help",
+    to: "/app/help",
     label: "Help",
     hint: "Docs & shortcuts",
     Icon: ({ size, weight }) => <Sparkle size={size} weight={weight} />,
   },
   {
-    to: "/settings",
+    to: "/app/settings",
     label: "Settings",
     hint: "Workspace preferences",
     Icon: ({ size, weight }) => <GearSix size={size} weight={weight} />,
@@ -78,7 +70,7 @@ export default function FeatureRail() {
   const location = useLocation();
   const path = location.pathname;
   const isActive = (item: NavItem) => {
-    if (item.to === "/") return path === "/" || path.startsWith("/workspace") || path.startsWith("/projects");
+    if (item.to === "/app") return path === "/app" || path.startsWith("/app/workspace") || path.startsWith("/app/projects");
     return path === item.to || path.startsWith(`${item.to}/`);
   };
 
@@ -94,7 +86,7 @@ export default function FeatureRail() {
         zIndex: 50,
       }}
     >
-      <Link to="/" className="mt-3 mb-4" aria-label="RexCharge home">
+      <Link to="/app" className="mt-3 mb-4" aria-label="RexCharge home">
         <CompactMark />
       </Link>
 
@@ -175,7 +167,7 @@ const RailButton = ({ item, active }: { item: NavItem; active: boolean }) => {
 
 const Avatar = () => (
   <Link
-    to="/settings"
+    to="/app/settings"
     className="mt-2 w-9 h-9 rounded-full grid place-items-center"
     style={{
       background: "var(--leaf-tint)",

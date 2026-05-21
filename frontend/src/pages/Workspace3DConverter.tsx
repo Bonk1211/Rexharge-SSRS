@@ -19,7 +19,7 @@ export default function Workspace3DConverter() {
         { kind: "glb", file: glbFile },
         ...result.files.map((file) => ({ kind: "source_photo", file })),
       ];
-      navigate("/projects/new", { state: { prefilledFiles: allFiles, prefilledMode: "photos" } });
+      navigate("/app/projects/new", { state: { prefilledFiles: allFiles, prefilledMode: "photos" } });
     } catch (err) {
       console.error(err);
       setSaving(false);

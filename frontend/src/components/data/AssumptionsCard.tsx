@@ -10,7 +10,6 @@ const items: Array<{ k: string; v: string; src?: string }> = [
   { k: "Soiling", v: "2 – 5 %", src: "tilt-dependent" },
   { k: "Wiring · mismatch", v: "2 % · 2 %", src: "Standard EPC" },
   { k: "Inverter loss", v: "1.4 %", src: "Sigen 98.6%" },
-  { k: "TNB tariff", v: "Domestic blocks", src: "2024 published" },
   { k: "ATAP NEM 3.0", v: "RM 0.30 / kWh", src: "SMP proxy" },
   { k: "CAPEX", v: "RM 4,500 / kWp", src: "configurable" },
 ];

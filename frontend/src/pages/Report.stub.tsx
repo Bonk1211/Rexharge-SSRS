@@ -69,7 +69,7 @@ export default function Report() {
             <Download weight="bold" size={14} />
             Download PDF
           </button>
-          <Link to={`/projects/${id}/analysis`} className="mono text-[10.5px] uppercase tracking-[0.18em] text-mute hover:text-ink">
+          <Link to={`/app/projects/${id}/analysis`} className="mono text-[10.5px] uppercase tracking-[0.18em] text-mute hover:text-ink">
             ← Back to analysis
           </Link>
         </div>

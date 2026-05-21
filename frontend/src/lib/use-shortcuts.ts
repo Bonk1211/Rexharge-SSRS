@@ -2,13 +2,12 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ROUTES: Record<string, string> = {
-  "1": "/",
-  "2": "/captures",
-  "3": "/reports",
-  "4": "/tariffs",
-  "5": "/portfolio",
-  n: "/projects/new",
-  N: "/projects/new",
+  "1": "/app",
+  "2": "/app/captures",
+  "3": "/app/reports",
+  "4": "/app/portfolio",
+  n: "/app/projects/new",
+  N: "/app/projects/new",
 };
 
 export function useShortcuts() {

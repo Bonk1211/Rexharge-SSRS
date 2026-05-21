@@ -10,7 +10,6 @@ export interface NewProjectInput {
   address?: string
   lat: number
   lon: number
-  tariff: 'domestic' | 'non_domestic_lv'
   intakeMode: IntakeMode
   status?: ProjectStatus
 }
@@ -47,7 +46,6 @@ function rowToProject(row: Record<string, unknown>): Project {
     address:          (row.address as string) ?? '',
     lat:              num(row.lat),
     lon:              num(row.lon),
-    tariff:           row.tariff as Project['tariff'],
     intakeMode:       row.intake_mode as IntakeMode,
     status:           row.status as ProjectStatus,
     capturedAt:       (row.captured_at as string) ?? '',
@@ -77,7 +75,6 @@ function projectToRow(input: NewProjectInput) {
     address:      input.address ?? null,
     lat:          input.lat,
     lon:          input.lon,
-    tariff:       input.tariff,
     intake_mode:  input.intakeMode,
     status:       input.status ?? 'draft',
   }

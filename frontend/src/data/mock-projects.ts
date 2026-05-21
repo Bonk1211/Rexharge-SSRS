@@ -7,7 +7,6 @@ export interface Project {
   address: string;
   lat: number;
   lon: number;
-  tariff: "domestic" | "non_domestic_lv";
   intakeMode: IntakeMode;
   status: ProjectStatus;
   capturedAt: string;

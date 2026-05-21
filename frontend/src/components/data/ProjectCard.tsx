@@ -20,7 +20,7 @@ export default function ProjectCard({ project, index = 0 }: { project: Project; 
   const isPending = project.status !== "ready";
   return (
     <Link
-      to={`/projects/${project.id}/analysis`}
+      to={`/app/projects/${project.id}/analysis`}
       className="group relative bg-surface rounded-2xl overflow-hidden flex flex-col animate-riseIn"
       style={{
         border: "1px solid var(--rule)",
