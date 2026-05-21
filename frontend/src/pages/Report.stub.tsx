@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import ProjectRail from "@/components/chrome/ProjectRail";
 import { useProject } from "@/store/projects-store";
 import { Download } from "@/icons";
 import { fmtKWh, fmtKWp, fmtRM, fmtYears } from "@/lib/format";
@@ -11,21 +10,16 @@ export default function Report() {
 
   if (isLoading || !project) {
     return (
-      <div className="flex">
-        <ProjectRail />
-        <main className="flex-1 flex items-center justify-center" style={{ minHeight: "60vh" }}>
-          <span className="mono text-[11px] uppercase tracking-[0.18em] text-mute animate-pulse">
-            {isLoading ? "Loading…" : "Project not found."}
-          </span>
-        </main>
-      </div>
+      <main className="flex-1 min-w-0 w-full flex items-center justify-center" style={{ minHeight: "60vh" }}>
+        <span className="mono text-[11px] uppercase tracking-[0.18em] text-mute animate-pulse">
+          {isLoading ? "Loading…" : "Project not found."}
+        </span>
+      </main>
     );
   }
 
   return (
-    <div className="flex">
-      <ProjectRail />
-      <main className="flex-1 px-12 py-10 max-w-[1100px]">
+    <main className="flex-1 min-w-0 w-full px-12 py-10">
         <div className="mono text-[10.5px] uppercase tracking-[0.24em] text-leaf-deep mb-2">
           Engineering report · 8 pp · WeasyPrint draft
         </div>
@@ -58,23 +52,22 @@ export default function Report() {
           <div className="mt-10 mono text-[10.5px] uppercase tracking-[0.18em] text-mute">
             Stub preview · v1 ships full WeasyPrint render w/ Playwright snapshots of the 3D viewer.
           </div>
-        </div>
+      </div>
 
-        <div className="flex items-center gap-3 mt-6">
-          <button
-            onClick={() => toast("Coming soon")}
-            className="px-4 h-10 inline-flex items-center gap-2 rounded-full text-[12.5px] font-bold tracking-tight text-paper"
-            style={{ background: "var(--ink)" }}
-          >
-            <Download weight="bold" size={14} />
-            Download PDF
-          </button>
-          <Link to={`/app/projects/${id}/analysis`} className="mono text-[10.5px] uppercase tracking-[0.18em] text-mute hover:text-ink">
-            ← Back to analysis
-          </Link>
-        </div>
-      </main>
-    </div>
+      <div className="flex items-center gap-3 mt-6">
+        <button
+          onClick={() => toast("Coming soon")}
+          className="px-4 h-10 inline-flex items-center gap-2 rounded-full text-[12.5px] font-bold tracking-tight text-paper"
+          style={{ background: "var(--ink)" }}
+        >
+          <Download weight="bold" size={14} />
+          Download PDF
+        </button>
+        <Link to={`/app/projects/${id}`} className="mono text-[10.5px] uppercase tracking-[0.18em] text-mute hover:text-ink">
+          ← Back to project
+        </Link>
+      </div>
+    </main>
   );
 }
 

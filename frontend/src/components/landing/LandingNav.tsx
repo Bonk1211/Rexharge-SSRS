@@ -7,7 +7,19 @@ interface LandingNavProps {
   onTryClick: () => void;
 }
 
-const NAV_LINKS = ["Studio", "How it works", "Yield model", "Pricing", "Docs"];
+const NAV_LINKS: { label: string; href: string }[] = [
+  { label: "Studio", href: "#studio" },
+  { label: "Yield model", href: "#yield-model" },
+  { label: "Features", href: "#features" },
+  { label: "How it works", href: "#how-it-works" },
+  { label: "Get started", href: "#get-started" },
+];
+
+function scrollToAnchor(href: string) {
+  const id = href.replace(/^#/, "");
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 export default function LandingNav({ onTryClick }: LandingNavProps) {
   const [scrolled, setScrolled] = useState(false);
@@ -41,15 +53,22 @@ export default function LandingNav({ onTryClick }: LandingNavProps) {
         </div>
 
         <nav className="nav-links hidden md:flex items-center" style={{ gap: 26 }}>
-          {NAV_LINKS.map((label) => (
-            <button
-              key={label}
+          {NAV_LINKS.map(({ label, href }) => (
+            <a
+              key={href}
+              href={href}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToAnchor(href);
+                if (history.replaceState) history.replaceState(null, "", href);
+              }}
               className="link-dotted"
               style={{
                 fontSize: 13,
                 fontWeight: 600,
                 color: "var(--ink-2)",
                 textDecorationColor: "transparent",
+                cursor: "pointer",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = "var(--leaf-deep)";
@@ -61,7 +80,7 @@ export default function LandingNav({ onTryClick }: LandingNavProps) {
               }}
             >
               {label}
-            </button>
+            </a>
           ))}
         </nav>
 

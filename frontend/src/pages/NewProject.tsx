@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, CheckCircle, CloudArrowUp, X } from "@phosphor-icons/react";
-import ProjectRail from "@/components/chrome/ProjectRail";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import Workspace3DSection from "@/components/workspace3d/Workspace3DSection";
 import { useCreateProject } from "@/store/projects-store";
@@ -140,8 +139,8 @@ export default function NewProject() {
       }
 
       await logEvent(project.id, "created");
-      toast.success("Project created");
-      navigate(`/app/projects/${project.id}/analysis`);
+      toast.success("Project ready — open in simulator next");
+      navigate(`/app/projects/${project.id}`);
     } catch (err) {
       const msg =
         err instanceof Error ? err.message
@@ -156,25 +155,19 @@ export default function NewProject() {
   // ---- render ----
 
   return (
-    <div className="flex">
-      <ProjectRail />
-
-      <main className={`flex-1 px-8 lg:px-12 py-10 ${step === 2 && form.intakeMode === "photos" ? "max-w-[1400px]" : "max-w-[860px]"}`}>
+    <main className="flex-1 min-w-0 w-full px-8 lg:px-12 py-10">
         <div className="mb-8">
           <div className="mono text-[10.5px] uppercase tracking-[0.24em] text-leaf-deep mb-2">
             Step {step + 1} of {STEPS.length} · {STEPS[step]}
           </div>
           <h1
-            className="text-[42px] md:text-[54px] numeral leading-[0.96] tracking-[-0.035em] text-ink"
+            className="numeral text-[36px] tracking-[-0.02em] text-ink"
             style={{ fontWeight: 600 }}
           >
-            New rooftop{" "}
-            <span className="italic" style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}>
-              project.
-            </span>
+            New project
           </h1>
           <p className="mt-3 text-[14px] text-mute max-w-[56ch]">
-            Configure site details, choose an intake mode, and upload reference files to generate a precise 3D solar model.
+            Configure the site, choose intake mode, and upload reference files.
           </p>
         </div>
 
@@ -212,7 +205,7 @@ export default function NewProject() {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/app")}
+              onClick={() => navigate("/app/clients")}
               className="inline-flex items-center gap-2 mono text-[11px] uppercase tracking-[0.18em] text-mute hover:text-ink"
             >
               <ArrowLeft weight="bold" size={12} /> Cancel
@@ -240,8 +233,7 @@ export default function NewProject() {
             </button>
           )}
         </div>
-      </main>
-    </div>
+    </main>
   );
 }
 

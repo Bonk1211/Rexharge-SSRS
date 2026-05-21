@@ -1,9 +1,67 @@
+import { useEffect, useState } from "react";
 import { ArrowUpRight } from "@/icons";
-import { SunPathGlyph, RinggitGlyph, DroneGlyph } from "@/icons/glyphs";
-import RooftopPreview from "./RooftopPreview";
 
 interface HeroProps {
   onTryClick: () => void;
+}
+
+const PHRASES = [
+  "settled before tea.",
+  "priced before lunch.",
+  "modelled before dusk.",
+  "audited before tender.",
+];
+
+function Typewriter({ phrases }: { phrases: string[] }) {
+  const [index, setIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "holding" | "erasing">("typing");
+
+  useEffect(() => {
+    const current = phrases[index];
+    if (phase === "typing") {
+      if (text.length < current.length) {
+        const t = window.setTimeout(() => setText(current.slice(0, text.length + 1)), 55);
+        return () => window.clearTimeout(t);
+      }
+      const t = window.setTimeout(() => setPhase("holding"), 1600);
+      return () => window.clearTimeout(t);
+    }
+    if (phase === "holding") {
+      const t = window.setTimeout(() => setPhase("erasing"), 400);
+      return () => window.clearTimeout(t);
+    }
+    if (phase === "erasing") {
+      if (text.length > 0) {
+        const t = window.setTimeout(() => setText(text.slice(0, -1)), 28);
+        return () => window.clearTimeout(t);
+      }
+      setIndex((i) => (i + 1) % phrases.length);
+      setPhase("typing");
+    }
+  }, [text, phase, index, phrases]);
+
+  return (
+    <span
+      className="display-soft"
+      style={{ fontStyle: "italic", color: "var(--ink)", whiteSpace: "pre" }}
+    >
+      {text}
+      <span
+        aria-hidden
+        style={{
+          display: "inline-block",
+          width: "0.06em",
+          marginLeft: "0.05em",
+          height: "0.85em",
+          background: "var(--leaf-deep)",
+          verticalAlign: "-0.08em",
+          animation: "hero-caret-blink 900ms steps(2,start) infinite",
+        }}
+      />
+      <style>{`@keyframes hero-caret-blink { 50% { opacity: 0; } }`}</style>
+    </span>
+  );
 }
 
 export default function Hero({ onTryClick }: HeroProps) {
@@ -17,36 +75,6 @@ export default function Hero({ onTryClick }: HeroProps) {
       }}
     >
       <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          right: -120,
-          top: 40,
-          opacity: 0.6,
-          pointerEvents: "none",
-          width: 520,
-          height: 320,
-        }}
-      >
-        <svg width="520" height="320" viewBox="0 0 520 320">
-          <defs>
-            <pattern id="hero-hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
-              <line x1="0" y1="0" x2="0" y2="10" stroke="var(--leaf)" strokeWidth="0.7" strokeOpacity="0.55" />
-            </pattern>
-          </defs>
-          <path
-            d="M 30 280 C 130 80, 260 80, 360 150 C 420 195, 460 160, 500 90"
-            stroke="var(--leaf)"
-            strokeWidth="1.2"
-            fill="none"
-            strokeDasharray="4 6"
-          />
-          <circle cx="500" cy="90" r="36" fill="url(#hero-hatch)" stroke="var(--leaf)" strokeWidth="1" />
-          <circle cx="500" cy="90" r="10" fill="var(--solar)" />
-        </svg>
-      </div>
-
-      <div
         className="hero-grid"
         style={{
           position: "relative",
@@ -54,9 +82,11 @@ export default function Hero({ onTryClick }: HeroProps) {
           margin: "0 auto",
           padding: "0 32px",
           display: "grid",
-          gridTemplateColumns: "1.05fr 1.15fr",
+          gridTemplateColumns: "1fr",
           gap: 52,
           alignItems: "center",
+          justifyItems: "center",
+          textAlign: "center",
         }}
       >
         <div>
@@ -83,7 +113,7 @@ export default function Hero({ onTryClick }: HeroProps) {
                   boxShadow: "0 0 0 4px var(--leaf-tint)",
                 }}
               />
-              Solar Layout Studio · for Malaysian EPCs
+              Solar Layout Studio
             </div>
 
             <h1
@@ -96,17 +126,9 @@ export default function Hero({ onTryClick }: HeroProps) {
                 margin: 0,
               }}
             >
-              Drone in.{" "}
-              <span style={{ color: "var(--leaf-deep)" }}>Ringgit</span>{" "}
-              <span className="display-soft" style={{ fontStyle: "italic" }}>
-                out.
-              </span>
+              Rooftop solar,
               <br />
-              The whole rooftop,
-              <br />
-              <span className="display-soft" style={{ fontStyle: "italic", color: "var(--ink)" }}>
-                settled before tea.
-              </span>
+              <Typewriter phrases={PHRASES} />
             </h1>
 
             <p
@@ -115,18 +137,16 @@ export default function Hero({ onTryClick }: HeroProps) {
                 fontSize: 17,
                 lineHeight: 1.55,
                 color: "var(--ink-2)",
-                maxWidth: "52ch",
+                maxWidth: "48ch",
+                marginLeft: "auto",
+                marginRight: "auto",
                 fontWeight: 500,
               }}
             >
-              RexCharge turns drone footage into bankable rooftop solar designs in under{" "}
-              <span className="link-dotted" style={{ fontWeight: 700, color: "var(--ink)" }}>
-                six minutes
-              </span>
-              . PVGIS-grade yield. ATAP NEM 3.0 settlement. Built for installers from Sentul to Skudai.
+              Drone footage to bankable rooftop design in under six minutes. PVGIS yield, ATAP NEM 3.0 settlement.
             </p>
 
-            <div className="flex items-center" style={{ gap: 14, marginTop: 32, flexWrap: "wrap" }}>
+            <div className="flex items-center" style={{ gap: 14, marginTop: 32, justifyContent: "center" }}>
               <button
                 onClick={onTryClick}
                 style={{
@@ -154,63 +174,10 @@ export default function Hero({ onTryClick }: HeroProps) {
                 Try the studio
                 <ArrowUpRight size={14} weight="bold" />
               </button>
-              <button
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "14px 20px",
-                  borderRadius: 999,
-                  fontSize: 13.5,
-                  fontWeight: 700,
-                  color: "var(--ink-2)",
-                  background: "transparent",
-                  border: "1px solid var(--rule)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <circle cx="6" cy="6" r="5.5" stroke="currentColor" strokeWidth="1" />
-                  <polygon points="4.5,3.5 8.5,6 4.5,8.5" fill="currentColor" />
-                </svg>
-                Watch the 90-sec tour
-              </button>
-            </div>
-
-            <div
-              className="flex items-center"
-              style={{
-                marginTop: 28,
-                gap: 14,
-                flexWrap: "wrap",
-                fontSize: 11,
-                color: "var(--mute)",
-                fontFamily: "JetBrains Mono, monospace",
-                textTransform: "uppercase",
-                letterSpacing: "0.16em",
-              }}
-            >
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <SunPathGlyph size={13} style={{ color: "var(--solar)" }} />
-                PVGIS TMY · Perez POA
-              </span>
-              <span style={{ color: "var(--dim)" }}>·</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <RinggitGlyph size={12} style={{ color: "var(--leaf-deep)" }} />
-                ATAP NEM 3.0 · ringgit/kWh
-              </span>
-              <span style={{ color: "var(--dim)" }}>·</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <DroneGlyph size={12} style={{ color: "var(--ink-2)" }} />
-                DJI · OBJ · MP4
-              </span>
             </div>
           </div>
         </div>
 
-        <div className="anim-rise" style={{ animationDelay: "180ms" }}>
-          <RooftopPreview />
-        </div>
       </div>
     </section>
   );

@@ -2,7 +2,6 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bounds,
   ContactShadows,
-  Environment,
   Html,
   OrbitControls,
   useGLTF,
@@ -140,8 +139,8 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
   }
 
   return (
-    <section className="max-w-[1400px]" id="workspace-3d">
-      <div className="flex items-end justify-between gap-4 mb-5">
+    <section className="w-full" id="workspace-3d">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="mono text-[10.5px] uppercase tracking-[0.22em] text-leaf-deep">
             Workspace · 3D reconstruction
@@ -150,13 +149,11 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
             Photo set to textured model.
           </h2>
         </div>
-        <span className="hidden sm:inline-flex rounded-full px-3 py-1.5 mono text-[10.5px] uppercase tracking-[0.16em] bg-leaf-tint text-leaf-deep">
-          Hunyuan GLB · local preview
-        </span>
+        <HeaderStats photos={photos.length} stage={stage} progress={progress} />
       </div>
 
       <div
-        className="grid gap-5 rounded-2xl bg-surface p-5 shadow-soft xl:grid-cols-[300px_minmax(0,1fr)_240px]"
+        className="grid gap-5 rounded-2xl bg-surface p-5 shadow-soft lg:grid-cols-[340px_minmax(0,1fr)]"
         style={{ border: "1px solid var(--rule)" }}
       >
         <ImportPanel
@@ -168,9 +165,40 @@ export default function Workspace3DSection({ onComplete }: { onComplete?: (photo
           onGenerate={generateRender}
         />
         <ModelViewer modelUrl={modelUrl} stage={stage} progress={progress} photoCount={photos.length} />
-        <StatusStack photos={photos.length} stage={stage} progress={progress} />
       </div>
     </section>
+  );
+}
+
+function HeaderStats({ photos, stage, progress }: { photos: number; stage: Stage; progress: number }) {
+  const pct = stage === "processing" ? progress : stage === "done" ? 100 : 0;
+  const modelStatus = stage === "done" ? "Ready" : stage === "processing" ? "Building" : "Pending";
+  return (
+    <div className="flex flex-wrap items-stretch gap-2">
+      <StatPill label="Photos" value={String(photos)} />
+      <StatPill label="Progress" value={`${pct}%`} />
+      <StatPill label="Model" value={modelStatus} accent={stage === "done"} />
+    </div>
+  );
+}
+
+function StatPill({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div
+      className="flex items-center gap-2 rounded-full px-3 py-1.5"
+      style={{
+        background: accent ? "var(--leaf-tint)" : "var(--surface-2)",
+        border: "1px solid var(--rule)",
+      }}
+    >
+      <span className="mono text-[10px] uppercase tracking-[0.18em] text-mute">{label}</span>
+      <span
+        className="numeral tab-num text-[13px] font-bold"
+        style={{ color: accent ? "var(--leaf-deep)" : "var(--ink)" }}
+      >
+        {value}
+      </span>
+    </div>
   );
 }
 
@@ -303,30 +331,6 @@ function ImportPanel({
   );
 }
 
-function StatusStack({ photos, stage, progress }: { photos: number; stage: Stage; progress: number }) {
-  const items = [
-    ["Imported photos", String(photos), "files"],
-    ["Processing", stage === "processing" ? String(progress) : stage === "done" ? "100" : "0", "%"],
-    ["Model", stage === "done" ? "Ready" : "Pending", "glb"],
-  ] as const;
-
-  return (
-    <aside className="grid content-start gap-3">
-      {items.map(([label, value, unit]) => (
-        <div key={label} className="rounded-xl bg-paper p-4" style={{ border: "1px solid var(--rule)" }}>
-          <p className="mono text-[10px] uppercase tracking-[0.18em] text-mute">{label}</p>
-          <p className="mt-2 numeral text-[34px] leading-none text-ink">
-            {value}
-            <span className="ml-1 align-baseline font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-mute">
-              {unit}
-            </span>
-          </p>
-        </div>
-      ))}
-    </aside>
-  );
-}
-
 function GeneratedModel({ url }: { url: string }) {
   const gltf = useGLTF(url);
 
@@ -430,7 +434,6 @@ function ModelViewer({
             <Bounds fit clip observe margin={1.35}>
               <GeneratedModel url={modelUrl} />
             </Bounds>
-            <Environment preset="city" />
             <ContactShadows position={[0, -0.01, 0]} opacity={0.36} scale={8} blur={2.4} far={8} />
           </Suspense>
           <OrbitControls
