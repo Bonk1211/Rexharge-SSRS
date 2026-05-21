@@ -47,17 +47,17 @@ export default function ProjectRail() {
 
       <nav className="px-2 py-2 space-y-0.5">
         <WorkspaceLink
-          to="/"
+          to="/app"
           label="Overview"
           caption="Portfolio overview"
-          active={path === "/"}
+          active={path === "/app" || path === "/app/"}
           Icon={House}
         />
         <WorkspaceLink
-          to="/workspace/3d-converter"
+          to="/app/workspace/3d-converter"
           label="3D Converter"
           caption="Photos to GLB"
-          active={path.startsWith("/workspace/3d-converter")}
+          active={path.startsWith("/app/workspace/3d-converter")}
           Icon={Cube}
         />
         <WorkspaceExternalLink
