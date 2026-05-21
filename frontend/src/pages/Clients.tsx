@@ -1,9 +1,7 @@
-import { Link } from "react-router-dom";
 import HairlineRule from "@/components/chrome/HairlineRule";
-import StatusPill from "@/components/chrome/StatusPill";
-import { ArrowUpRight } from "@/icons";
+import ProjectCard from "@/components/data/ProjectCard";
 import { useProjects, usePortfolioStats } from "@/store/projects-store";
-import { fmtKWh, fmtKWp, fmtRM, fmtYears } from "@/lib/format";
+import { fmtKWh, fmtKWp, fmtRM } from "@/lib/format";
 
 export default function Clients() {
   const { data: projects = [] } = useProjects();
@@ -15,7 +13,7 @@ export default function Clients() {
         Clients &amp; sites.
       </h1>
       <p className="mt-3 text-[14px] text-mute max-w-[58ch]">
-        One row per client project. Click a row to open the monitoring view.
+        Each card opens the site&rsquo;s analysis view.
       </p>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-8 mb-8">
@@ -27,52 +25,15 @@ export default function Clients() {
 
       <HairlineRule label="Clients" className="mb-5" />
 
-      <div className="bg-surface rounded-2xl overflow-hidden" style={{ border: "1px solid var(--rule)" }}>
-        <table className="w-full mono text-[12px] tab-num">
-          <thead>
-            <tr
-              className="text-[9.5px] uppercase tracking-[0.18em] text-mute text-left"
-              style={{ borderBottom: "1px solid var(--rule)" }}
-            >
-              <th className="px-5 py-3 font-normal">ID</th>
-              <th className="px-3 py-3 font-normal">Client</th>
-              <th className="px-3 py-3 font-normal">Address</th>
-              <th className="px-3 py-3 font-normal text-right">kWp</th>
-              <th className="px-3 py-3 font-normal text-right">kWh / yr</th>
-              <th className="px-3 py-3 font-normal text-right">Saving / yr</th>
-              <th className="px-3 py-3 font-normal text-right">Payback</th>
-              <th className="px-3 py-3 font-normal">Status</th>
-              <th className="px-5 py-3 font-normal text-right" />
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((p, i) => (
-              <tr
-                key={p.id}
-                style={{ borderBottom: i === projects.length - 1 ? "none" : "1px dashed var(--rule)" }}
-              >
-                <td className="px-5 py-3 text-leaf-deep">{p.id}</td>
-                <td className="px-3 py-3 text-ink-2 normal-case tracking-tight font-sans">
-                  <Link to={`/app/projects/${p.id}`} className="font-bold text-ink hover:text-leaf-deep">
-                    {p.name}
-                  </Link>
-                </td>
-                <td className="px-3 py-3 text-mute normal-case tracking-tight font-sans">{p.address}</td>
-                <td className="px-3 py-3 text-right">{p.kwp ? fmtKWp(p.kwp) : "—"}</td>
-                <td className="px-3 py-3 text-right">{p.annualKwh ? fmtKWh(p.annualKwh) : "—"}</td>
-                <td className="px-3 py-3 text-right">{p.annualSavingsRm ? fmtRM(p.annualSavingsRm, { compact: true }) : "—"}</td>
-                <td className="px-3 py-3 text-right">{p.paybackYears ? fmtYears(p.paybackYears) : "—"}</td>
-                <td className="px-3 py-3"><StatusPill status={p.status} size="sm" /></td>
-                <td className="px-5 py-3 text-right">
-                  <Link to={`/app/projects/${p.id}`} className="text-mute hover:text-ink inline-flex">
-                    <ArrowUpRight weight="bold" size={14} />
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {projects.length === 0 ? (
+        <p className="text-[13px] text-mute py-6">No projects yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {projects.map((p, i) => (
+            <ProjectCard key={p.id} project={p} index={i} />
+          ))}
+        </div>
+      )}
     </main>
   );
 }

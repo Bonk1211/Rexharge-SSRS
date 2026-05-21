@@ -4,6 +4,7 @@ import type { Project } from "@/data/mock-projects";
 import StatusPill from "@/components/chrome/StatusPill";
 import { fmtKWh, fmtKWp, fmtRM, fmtRelTime, fmtYears } from "@/lib/format";
 import Sparkline from "./Sparkline";
+import Mini3DPreview from "./Mini3DPreview";
 
 /* ProjectCard — gallery tile.
  * Diagonal flow: thumbnail block (left) → metric stack (right).
@@ -20,7 +21,7 @@ export default function ProjectCard({ project, index = 0 }: { project: Project; 
   const isPending = project.status !== "ready";
   return (
     <Link
-      to={`/app/projects/${project.id}/analysis`}
+      to={`/app/projects/${project.id}`}
       className="group relative bg-surface rounded-2xl overflow-hidden flex flex-col animate-riseIn"
       style={{
         border: "1px solid var(--rule)",
@@ -35,11 +36,13 @@ export default function ProjectCard({ project, index = 0 }: { project: Project; 
           borderBottom: "1px solid var(--rule)",
         }}
       >
-        <ThumbArtwork hue={project.thumbnailHue} />
-        <div className="absolute top-3 right-3">
+        <div className="absolute inset-0 pointer-events-none">
+          <Mini3DPreview project={project} />
+        </div>
+        <div className="absolute top-3 right-3 pointer-events-none">
           <StatusPill status={project.status} />
         </div>
-        <div className="absolute bottom-3 left-3 mono text-[10px] uppercase tracking-[0.16em] text-ink/70">
+        <div className="absolute bottom-3 left-3 mono text-[10px] uppercase tracking-[0.16em] text-ink/70 pointer-events-none">
           {intakeLabel[project.intakeMode] ?? project.intakeMode}
         </div>
       </div>
@@ -112,50 +115,3 @@ const Stat = ({ label, value, unit }: { label: string; value: string; unit?: str
   </div>
 );
 
-/* Schematic rooftop artwork — generated from the project hue.
- * Three diagonal stripes, a small pin, dotted contour. Engineering-blueprint feel. */
-const ThumbArtwork = ({ hue }: { hue: number }) => (
-  <svg
-    aria-hidden
-    viewBox="0 0 320 180"
-    className="absolute inset-0 w-full h-full"
-    preserveAspectRatio="none"
-  >
-    <defs>
-      <pattern id={`g-${hue}`} width="14" height="14" patternUnits="userSpaceOnUse">
-        <line x1="0" y1="0" x2="0" y2="14" stroke={`hsl(${hue} 30% 32% / 0.18)`} strokeWidth="0.5" />
-        <line x1="0" y1="0" x2="14" y2="0" stroke={`hsl(${hue} 30% 32% / 0.18)`} strokeWidth="0.5" />
-      </pattern>
-    </defs>
-    <rect width="320" height="180" fill={`url(#g-${hue})`} />
-    <polygon
-      points="80,30 280,40 270,150 60,140"
-      fill={`hsl(${hue} 35% 55% / 0.85)`}
-      stroke={`hsl(${hue} 38% 30%)`}
-      strokeWidth="1.4"
-    />
-    <polygon
-      points="80,30 280,40 180,80"
-      fill={`hsl(${hue} 35% 70%)`}
-      stroke={`hsl(${hue} 38% 30%)`}
-      strokeWidth="1"
-      strokeDasharray="2 3"
-    />
-    {/* Panels grid */}
-    <g stroke={`hsl(${hue} 40% 22%)`} strokeWidth="0.8" fill={`hsl(${hue} 30% 38% / 0.6)`}>
-      {Array.from({ length: 4 }).map((_, r) =>
-        Array.from({ length: 6 }).map((_, c) => (
-          <rect key={`${r}-${c}`} x={100 + c * 28} y={88 + r * 14} width={24} height={11} />
-        )),
-      )}
-    </g>
-    {/* North arrow */}
-    <g transform="translate(296,28)">
-      <circle r="12" fill="white" stroke={`hsl(${hue} 40% 28%)`} strokeWidth="1" />
-      <polygon points="0,-7 3,5 0,2 -3,5" fill={`hsl(${hue} 40% 28%)`} />
-      <text y="-13" textAnchor="middle" fontSize="6" fill={`hsl(${hue} 40% 28%)`} fontFamily="Mulish">
-        N
-      </text>
-    </g>
-  </svg>
-);
