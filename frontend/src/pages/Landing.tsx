@@ -10,7 +10,7 @@ import Closing from "@/components/landing/Closing";
 export default function Landing() {
   const navigate = useNavigate();
   const onTryClick = useCallback(() => {
-    navigate("/app");
+    navigate("/app/workspace/3d-converter");
   }, [navigate]);
 
   return (

@@ -1,14 +1,22 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Plus } from "@/icons";
-import { useProjects, usePortfolioStats } from "@/store/projects-store";
+import {
+  useProjects,
+  usePortfolioStats,
+  usePortfolioCharts,
+} from "@/store/projects-store";
 import MetricTile from "@/components/metrics/MetricTile";
 import ActivityFeed from "@/components/data/ActivityFeed";
+import PowerCurveCard from "@/components/data/PowerCurveCard";
+import YieldVsTargetCard from "@/components/data/YieldVsTargetCard";
+import PortfolioGaugesRow from "@/components/data/PortfolioGaugesRow";
 import StatusPill from "@/components/chrome/StatusPill";
 import type { Project } from "@/data/mock-projects";
 
 export default function Monitoring() {
   const { data: projects = [], isLoading } = useProjects();
   const stats = usePortfolioStats();
+  const { powerCurve, monthly, gauges } = usePortfolioCharts();
 
   return (
     <main className="flex-1 min-w-0 w-full px-8 lg:px-12 py-10">
@@ -44,7 +52,7 @@ export default function Monitoring() {
         </div>
       ) : (
         <div
-          className="bg-surface rounded-2xl p-7 grid grid-cols-2 lg:grid-cols-4 gap-7"
+          className="bg-surface rounded-2xl p-6 grid grid-cols-2 lg:grid-cols-4 gap-6"
           style={{ border: "1px solid var(--rule)" }}
         >
           <MetricTile
@@ -54,7 +62,7 @@ export default function Monitoring() {
             unit="kWp"
             accent="leaf"
             hint={`${stats.readyProjects} of ${stats.totalProjects} sites`}
-            variant="lg"
+            variant="md"
             delay={120}
           />
           <MetricTile
@@ -63,7 +71,7 @@ export default function Monitoring() {
             unit="kWh"
             accent="solar"
             hint="PVGIS TMY · Perez POA"
-            variant="lg"
+            variant="md"
             delay={240}
           />
           <MetricTile
@@ -72,7 +80,7 @@ export default function Monitoring() {
             prefix="RM "
             accent="leaf"
             hint="TNB + ATAP NEM"
-            variant="lg"
+            variant="md"
             delay={360}
           />
           <MetricTile
@@ -82,7 +90,7 @@ export default function Monitoring() {
             unit="years"
             accent="terracotta"
             hint="@ RM 4,500 / kWp CAPEX"
-            variant="lg"
+            variant="md"
             delay={480}
           />
         </div>
@@ -102,9 +110,24 @@ export default function Monitoring() {
         </div>
       )}
 
+      {/* Chart row — power curve + monthly yield */}
+      {!isLoading && projects.length > 0 && (
+        <section className="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-5">
+          <PowerCurveCard data={powerCurve} />
+          <YieldVsTargetCard data={monthly} />
+        </section>
+      )}
+
+      {/* Gauge row */}
+      {!isLoading && projects.length > 0 && (
+        <section className="mt-5">
+          <PortfolioGaugesRow {...gauges} />
+        </section>
+      )}
+
       {/* Two-column section */}
       {!isLoading && projects.length > 0 && (
-        <section className="mt-10 grid grid-cols-1 xl:grid-cols-3 gap-5">
+        <section className="mt-8 grid grid-cols-1 xl:grid-cols-3 gap-5">
           <div className="xl:col-span-2">
             <SitesNeedingAttention projects={projects} />
           </div>
