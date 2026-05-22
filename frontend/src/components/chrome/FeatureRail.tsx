@@ -86,7 +86,7 @@ export default function FeatureRail() {
         zIndex: 50,
       }}
     >
-      <Link to="/app" className="mt-3 mb-4" aria-label="RexCharge home">
+      <Link to="/app" className="mt-3 mb-4" aria-label="Rexharge home">
         <CompactMark />
       </Link>
 

@@ -1,6 +1,6 @@
-/* RexCharge SLS wordmark — composite mark.
+/* Rexharge SLS wordmark — composite mark.
  * "RE" set in Fraunces semibold for editorial weight.
- * "xcharge" set in Mulish 800 with deliberate negative tracking.
+ * "xharge" set in Mulish 800 with deliberate negative tracking.
  * The "x" carries a leaf-arc accent (rexharge brand cue) anchored to its center.
  * Sub-tag "Solar Layout Studio" set in mono caps for engineering signal. */
 
@@ -16,7 +16,7 @@ export default function Wordmark({ compact }: { compact?: boolean }) {
             className="font-sans text-[22px] leading-none text-ink"
             style={{ fontWeight: 800, letterSpacing: "-0.02em" }}
           >
-            xcharge
+            xharge
           </span>
           <LeafArc />
         </span>

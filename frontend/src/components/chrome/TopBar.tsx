@@ -74,7 +74,7 @@ export default function TopBar() {
       style={{ height: "var(--topbar-height)", borderBottom: "1px solid var(--rule)" }}
     >
       <div className="h-full px-5 flex items-center gap-4">
-        <Link to="/" className="shrink-0" aria-label="RexCharge — landing">
+        <Link to="/" className="shrink-0" aria-label="Rexharge — landing">
           <CompactMark />
         </Link>
 

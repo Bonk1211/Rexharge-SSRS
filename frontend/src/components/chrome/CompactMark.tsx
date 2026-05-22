@@ -1,4 +1,4 @@
-/* Compact RexCharge mark — square, used in tight spaces (FeatureRail head).
+/* Compact Rexharge mark — square, used in tight spaces (FeatureRail head).
  * Custom glyph: stylised leaf-arc + spark on a deep ink chip. */
 
 export default function CompactMark() {
@@ -6,7 +6,7 @@ export default function CompactMark() {
     <div
       className="w-10 h-10 rounded-xl relative grid place-items-center"
       style={{ background: "var(--ink)" }}
-      aria-label="RexCharge SLS"
+      aria-label="Rexharge SLS"
     >
       <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden>
         <path

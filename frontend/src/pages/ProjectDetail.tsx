@@ -182,7 +182,7 @@ export default function ProjectDetail() {
 
         <HairlineRule className="mt-16" />
         <p className="mt-4 mono text-[10px] uppercase tracking-[0.18em] text-mute">
-          RexCharge SLS v1.0 · pvlib + PVGIS TMY · ATAP NEM 3.0
+          Rexharge SLS v1.0 · pvlib + PVGIS TMY · ATAP NEM 3.0
         </p>
       </div>
     </main>

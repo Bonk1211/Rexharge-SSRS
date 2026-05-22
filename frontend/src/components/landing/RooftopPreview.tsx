@@ -112,7 +112,7 @@ export default function RooftopPreview() {
           <span style={{ width: 9, height: 9, borderRadius: 999, background: "var(--leaf)", opacity: 0.65 }} />
         </div>
         <div className="mono" style={{ fontSize: 10, color: "var(--mute)", letterSpacing: "0.16em", textTransform: "uppercase" }}>
-          studio.rexcharge.my / projects / sentul-warehouse-04 / analysis
+          studio.rexharge.my / projects / sentul-warehouse-04 / analysis
         </div>
         <div style={{ flex: 1 }} />
         <span
