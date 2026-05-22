@@ -87,7 +87,7 @@ const DarkCTA = ({ onTryClick }: { onTryClick: () => void }) => (
             className="anim-pulse"
             style={{ width: 6, height: 6, borderRadius: 999, background: "var(--leaf)" }}
           />
-          Early access · cohort 03 closing Friday
+          Six Seven · Theme 3 · Automated PV Layout Design
         </div>
         <h2
           className="numeral"
@@ -99,10 +99,10 @@ const DarkCTA = ({ onTryClick }: { onTryClick: () => void }) => (
             color: "var(--paper)",
           }}
         >
-          Stop quoting in spreadsheets.
+          Stop hallucinating layouts.
           <br />
           <span className="display-soft" style={{ fontStyle: "italic", color: "var(--leaf)" }}>
-            Start settling in ringgit.
+            Start reconstructing them.
           </span>
         </h2>
         <p
@@ -111,10 +111,12 @@ const DarkCTA = ({ onTryClick }: { onTryClick: () => void }) => (
             fontSize: 16,
             color: "color-mix(in srgb, var(--paper) 75%, transparent)",
             lineHeight: 1.55,
-            maxWidth: "52ch",
+            maxWidth: "56ch",
           }}
         >
-          We onboard six new EPCs per quarter. Bring three real projects, walk out with three real proposals on day one.
+          50 repeat runs on the same site. Image-generation tools drift ±6 modules and ±9.4% on yield. SfM-grounded
+          geometry doesn't drift — same input, same output, every run. That's the property procurement and finance
+          actually need.
         </p>
 
         <div className="flex items-center" style={{ gap: 14, marginTop: 32, flexWrap: "wrap" }}>
@@ -173,11 +175,11 @@ const DarkCTA = ({ onTryClick }: { onTryClick: () => void }) => (
             letterSpacing: "0.18em",
           }}
         >
-          <span>Free for your first 3 projects</span>
+          <span>SfM-grounded geometry</span>
           <span style={{ opacity: 0.4 }}>·</span>
-          <span>No card, no AutoCAD seat needed</span>
+          <span>Explicit PR loss stack</span>
           <span style={{ opacity: 0.4 }}>·</span>
-          <span>BM &amp; EN support</span>
+          <span>TNB tariff engine · NEM 3.0</span>
         </div>
       </div>
 
@@ -200,7 +202,7 @@ const DarkCTA = ({ onTryClick }: { onTryClick: () => void }) => (
             marginBottom: 12,
           }}
         >
-          From cohort 02
+          MVP run · Eco Horizon, Penang
         </div>
         <blockquote
           className="display-soft"
@@ -213,7 +215,8 @@ const DarkCTA = ({ onTryClick }: { onTryClick: () => void }) => (
             letterSpacing: "-0.02em",
           }}
         >
-          “We used to lose two days a quote. Now we close before lunch. Last month we shipped seventeen.”
+          Google Maps measured 14.60 m. Simulator returned 14.6 m × 13.3 m, 194.2 m² roof area. One ground-truth
+          dimension propagated to every downstream geometric quantity, by construction.
         </blockquote>
         <div
           className="hairline"
@@ -221,7 +224,7 @@ const DarkCTA = ({ onTryClick }: { onTryClick: () => void }) => (
         />
         <div className="flex items-baseline justify-between">
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: "var(--paper)" }}>Aiman binti Hashim</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "var(--paper)" }}>Run B · Load-matched</div>
             <div
               className="mono"
               style={{
@@ -232,11 +235,11 @@ const DarkCTA = ({ onTryClick }: { onTryClick: () => void }) => (
                 marginTop: 2,
               }}
             >
-              Director · Suria Atap Sdn Bhd
+              10 modules · 6.2 kWp · 8.7 MWh/yr · 6.3 yr payback
             </div>
           </div>
           <div className="numeral tab-num" style={{ fontSize: 28, color: "var(--leaf)", lineHeight: 1 }}>
-            17×
+            85.5%
           </div>
         </div>
       </div>
@@ -285,7 +288,6 @@ const Footer = () => (
         }}
       >
         <span>PVGIS TMY · ATAP NEM 3.0</span>
-        <span>Recharge Xolutions Sdn Bhd</span>
         <span>Kuala Lumpur · Selangor</span>
       </div>
     </div>

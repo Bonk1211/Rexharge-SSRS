@@ -15,17 +15,17 @@ const FEATURES: Feature[] = [
   {
     key: "drone",
     eyebrow: "01 · Capture",
-    title: "Drone footage in. Mesh in 6 minutes.",
-    desc: "Drag a DJI .MP4 or .ZIP onto the canvas. RexCharge runs structure-from-motion on the cloud, returns a centimetre-accurate textured mesh you can pan, slice, and measure.",
+    title: "Multi-angle imagery. Not one overhead shot.",
+    desc: "8 to 12 geotagged photos from a drone orbital pass at 15-25 m altitude. Single overhead images can't recover obstacle height, roof pitch, or true plane orientation — so we don't pretend they can.",
     Icon: DroneGlyph,
     accent: "var(--ink-blue)",
     detail: <DroneDetail />,
   },
   {
     key: "model",
-    eyebrow: "02 · Model",
-    title: "Blueprint-grade 3D, not a guess.",
-    desc: "Parapets, vents, AC plant, water tanks — all auto-detected and tagged as exclusion zones. Draw setbacks with a single click. Snap panel arrays to roof planes that actually exist.",
+    eyebrow: "02 · Reconstruct",
+    title: "SfM-grounded 3D, with AI densification.",
+    desc: "Structure-from-motion carries the geometry, in-house AI mesh model densifies the surface. RANSAC plane fitting extracts per-plane tilt, azimuth, and obstacle height. Parapets, water tanks, HVAC units — all measured, not guessed.",
     Icon: MeshImportGlyph,
     accent: "var(--leaf-deep)",
     detail: <ModelDetail />,
@@ -33,8 +33,8 @@ const FEATURES: Feature[] = [
   {
     key: "yield",
     eyebrow: "03 · Yield",
-    title: "PVGIS-grade yield. Hourly.",
-    desc: "Perez transposition on hourly TMY data, cell-temperature corrected at 50 °C, soiling and mismatch derated. We test against measured plants in Klang and we're within ±6%.",
+    title: "Meteonorm TMY. 8,760 hours.",
+    desc: "Hourly DNI + DHI on the site coordinates, cross-validated against NASA POWER. 3D ray-traced shading from extracted obstacles. Explicit loss stack: temperature, soiling, inverter, wiring, mismatch — PR derived, not assumed.",
     Icon: SunPathGlyph,
     accent: "var(--solar)",
     detail: <YieldDetail />,
@@ -42,8 +42,8 @@ const FEATURES: Feature[] = [
   {
     key: "roi",
     eyebrow: "04 · Settle",
-    title: "Ringgit, not just kilowatts.",
-    desc: "ATAP NEM 3.0 sell-back, capex schedules, and Sigen + Huawei inverter SKUs. Export a bankable proposal as PDF or XLSX.",
+    title: "TNB tariff engine. Marginal-tier rates.",
+    desc: "Domestik or Komersial, NEM 3.0 sell-back toggle. Marginal-tier kWh pricing surfaces the displacement value most tools flatten away. Same site, two configurations on one screen, the tariff consequence in ringgit.",
     Icon: RinggitGlyph,
     accent: "var(--leaf-deep)",
     detail: <RoiDetail />,
@@ -78,18 +78,18 @@ export default function Features() {
                 margin: 0,
               }}
             >
-              From DJI clip to{" "}
+              Multi-angle photos to{" "}
               <span className="display-soft" style={{ fontStyle: "italic" }}>
-                bankable proposal,
+                auditable proposal,
               </span>
               <br />
-              in one tab.
+              in one pipeline.
             </h2>
           </div>
           <p style={{ maxWidth: "44ch", fontSize: 14.5, color: "var(--mute)", lineHeight: 1.55 }}>
-            No more bouncing between Helios, PV*SOL, AutoCAD, and three spreadsheets. RexCharge collapses
-            the rooftop-solar design stack into a single, opinionated studio — built for the way
-            Malaysian EPCs actually quote.
+            No image-generation hallucinations. No fragmented AutoCAD + PVsyst hand-off. Geometry from
+            structure-from-motion, yield from explicit formulas — built for the determinism that
+            procurement and finance actually need.
           </p>
         </div>
 
@@ -213,10 +213,10 @@ function DroneDetail() {
         <line x1="0" y1="9" x2="0" y2="5" stroke="var(--ink-blue)" strokeWidth="1.2" />
       </g>
       <text x="50" y="14" fontSize="8" fontFamily="JetBrains Mono" fill="var(--ink-2)" letterSpacing="1">
-        FLIGHT · NADIR + 5 OBLIQUES
+        ORBITAL · 8-12 GEOTAGGED IMAGES
       </text>
       <text x="280" y="78" fontSize="8" fontFamily="JetBrains Mono" fill="var(--mute)" textAnchor="end" letterSpacing="1">
-        ETA · 6 MIN
+        RUNTIME · 10 MIN
       </text>
     </svg>
   );
@@ -290,7 +290,7 @@ function YieldDetail() {
         strokeWidth="1.4"
       />
       <text x={w - pad} y="12" fontSize="7.5" fontFamily="JetBrains Mono" fill="var(--ink-2)" textAnchor="end" letterSpacing="1">
-        kWh / MONTH · 41,150 yr⁻¹
+        SPECIFIC YIELD · 1,398 kWh/kWp/yr
       </text>
     </svg>
   );
@@ -299,9 +299,9 @@ function YieldDetail() {
 function RoiDetail() {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, width: "100%" }}>
-      <RoiBlock label="Capex · kWp" value="RM 4,500" />
-      <RoiBlock label="Payback" value="4.6 yrs" accent />
-      <RoiBlock label="IRR · 20y" value="22.4%" accent />
+      <RoiBlock label="Capex · kWp" value="RM 3,800" />
+      <RoiBlock label="Payback" value="6.3 yrs" accent />
+      <RoiBlock label="PR" value="85.5%" accent />
       <div style={{ gridColumn: "1 / -1", marginTop: 2 }}>
         <div
           className="mono"
@@ -313,7 +313,7 @@ function RoiDetail() {
             marginBottom: 6,
           }}
         >
-          Self-cons. vs export · 62 / 38
+          Load-matched vs Max-fit · 6.3 / 21.6 yr
         </div>
         <div style={{ height: 8, borderRadius: 999, background: "var(--surface-3)", overflow: "hidden", display: "flex" }}>
           <div style={{ width: "62%", background: "var(--leaf)" }} />

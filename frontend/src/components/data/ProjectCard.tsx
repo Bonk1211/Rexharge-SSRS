@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, MapPin } from "@/icons";
-import type { Project } from "@/data/mock-projects";
+import type { Project } from "@/data/projects";
 import StatusPill from "@/components/chrome/StatusPill";
 import { fmtKWh, fmtKWp, fmtRM, fmtRelTime, fmtYears } from "@/lib/format";
 import Sparkline from "./Sparkline";

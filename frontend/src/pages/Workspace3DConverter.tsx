@@ -147,13 +147,24 @@ export default function Workspace3DConverter() {
 
   return (
     <div
-      className="grid bg-paper text-ink"
+      className="grid bg-paper text-ink relative"
       style={{
         height: "calc(100vh - var(--topbar-height))",
         gridTemplateColumns: "280px 1fr 296px",
         gridTemplateAreas: '"left canvas right"',
       }}
     >
+      <div
+        className="absolute top-2 left-1/2 -translate-x-1/2 z-20 px-3 py-1.5 rounded-full mono text-[10.5px] uppercase tracking-[0.16em] flex items-center gap-2 pointer-events-none"
+        style={{
+          background: "var(--terracotta-tint, #FDECE5)",
+          color: "var(--terracotta-deep, #B5532E)",
+          border: "1px solid var(--terracotta, #E07856)",
+        }}
+      >
+        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "currentColor" }} />
+        Demo only — no real-time inference; GPU server cost not in scope for this demo
+      </div>
       {/* Left rail */}
       <aside
         className="flex flex-col min-h-0"

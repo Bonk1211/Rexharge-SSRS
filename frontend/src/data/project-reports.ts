@@ -33,3 +33,48 @@ export async function loadProjectReport(reportId?: string) {
   if (!hasProjectReport(reportId)) return null;
   return projectReportLoaders[reportId]();
 }
+
+export type ReportMetrics = {
+  kwp: number;
+  annualKwh: number;
+  annualSavingsRm: number;
+  paybackYears: number;
+  panels: number;
+  capacityFactor: number;
+  panelWatts: number;
+};
+
+const num = (s: unknown): number => {
+  if (typeof s === "number") return s;
+  if (typeof s !== "string") return 0;
+  const m = s.replace(/[,\s]/g, "").match(/-?\d+(\.\d+)?/);
+  return m ? parseFloat(m[0]) : 0;
+};
+
+export function extractMetricsFromReport(report: unknown): ReportMetrics | null {
+  if (!report || typeof report !== "object") return null;
+  const r = report as Record<string, any>;
+  const sys = r.systemSummary ?? {};
+  const energy = r.energyProduction ?? {};
+  const fin = r.financial ?? {};
+  const panelSpecs = r.panelConfig?.specs ?? {};
+
+  const kwp = num(sys.systemCapacity);
+  if (!kwp) return null;
+
+  let annualKwh = num(energy.annualTotal);
+  if (/MWh/i.test(String(energy.annualTotal ?? ""))) annualKwh *= 1000;
+
+  const specificYield = num(energy.specificYield);
+  const capacityFactor = specificYield ? specificYield / 8760 : 0;
+
+  return {
+    kwp,
+    annualKwh,
+    annualSavingsRm: num(fin.annualSavings),
+    paybackYears: num(fin.paybackPeriod),
+    panels: num(sys.totalPanels),
+    capacityFactor,
+    panelWatts: num(panelSpecs.power_stc) || 620,
+  };
+}

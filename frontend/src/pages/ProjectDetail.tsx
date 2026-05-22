@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowUpRight } from "@/icons";
 import { useProject } from "@/store/projects-store";
@@ -13,9 +13,10 @@ import ProjectDashboard from "@/components/data/ProjectDashboard";
 import {
   loadProjectReport,
   isPlaceholderReport,
+  extractMetricsFromReport,
   type FullProjectReport,
 } from "@/data/project-reports";
-import type { Project } from "@/data/mock-projects";
+import type { Project } from "@/data/projects";
 import { tariffCodeFromString } from "@/data/case-study-buildings";
 import { useGlbUrl } from "@/lib/glb-url";
 
@@ -70,7 +71,23 @@ export default function ProjectDetail() {
     return () => { cancelled = true; };
   }, [project?.reportId]);
 
-  if (isLoading || !project) {
+  const reportMetrics = useMemo(() => extractMetricsFromReport(report), [report]);
+
+  const mergedProject = useMemo<Project | undefined>(() => {
+    if (!project) return undefined;
+    if (!reportMetrics) return project;
+    return {
+      ...project,
+      kwp: reportMetrics.kwp || project.kwp,
+      annualKwh: reportMetrics.annualKwh || project.annualKwh,
+      annualSavingsRm: reportMetrics.annualSavingsRm || project.annualSavingsRm,
+      paybackYears: reportMetrics.paybackYears || project.paybackYears,
+      panels: reportMetrics.panels || project.panels,
+      capacityFactor: reportMetrics.capacityFactor || project.capacityFactor,
+    };
+  }, [project, reportMetrics]);
+
+  if (isLoading || !project || !mergedProject) {
     return (
       <main className="flex-1 min-w-0 w-full px-8 lg:px-12 flex items-center justify-center" style={{ minHeight: "60vh" }}>
         {isLoading
@@ -130,12 +147,12 @@ export default function ProjectDetail() {
           <SectionHeader index="01" title="Layout" subtitle="Reconstructed mesh + greedy panel pack + sun-path." />
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_var(--right-width)] gap-5">
             <div className="flex flex-col gap-4 min-w-0">
-              {glbUrl ? (
-                <MeshViewer lat={project.lat} lon={project.lon} glbUrl={glbUrl} />
-              ) : report ? (
+              {report ? (
                 <ExportedSceneViewer report={report} />
               ) : reportLoading ? (
                 <ReportViewerSkeleton />
+              ) : glbUrl ? (
+                <MeshViewer lat={project.lat} lon={project.lon} glbUrl={glbUrl} />
               ) : (
                 <MeshViewer lat={project.lat} lon={project.lon} />
               )}
@@ -145,12 +162,13 @@ export default function ProjectDetail() {
             </div>
             <div className="flex flex-col gap-5">
               <MetricStack
-                kwp={project.kwp}
-                kwh={project.annualKwh}
-                savings={project.annualSavingsRm}
-                payback={project.paybackYears}
-                panels={project.panels}
-                capacityFactor={project.capacityFactor}
+                kwp={mergedProject.kwp}
+                kwh={mergedProject.annualKwh}
+                savings={mergedProject.annualSavingsRm}
+                payback={mergedProject.paybackYears}
+                panels={mergedProject.panels}
+                capacityFactor={mergedProject.capacityFactor}
+                panelWatts={reportMetrics?.panelWatts}
               />
             </div>
           </div>
@@ -159,7 +177,7 @@ export default function ProjectDetail() {
         {/* SECTION 2 — Dashboard */}
         <section id="sec-dashboard" className="scroll-mt-32 mb-12">
           <SectionHeader index="02" title="Dashboard" subtitle="System summary · real-time · environmental · loss · inverter · finance." />
-          <ProjectDashboard project={project} />
+          <ProjectDashboard project={mergedProject} />
         </section>
 
         <HairlineRule className="mt-16" />

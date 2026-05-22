@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type Layer = "mesh" | "planes" | "obstacles" | "panels" | "shading" | "sunpath" | "grid";
+export type Layer = "mesh" | "planes" | "obstacles" | "panels" | "shading" | "sunpath" | "grid" | "irradiance" | "wireframe";
 
 interface ViewerState {
   layers: Record<Layer, boolean>;
@@ -25,6 +25,8 @@ export const useViewerStore = create<ViewerState>((set) => ({
     shading: false,
     sunpath: true,
     grid: true,
+    irradiance: false,
+    wireframe: false,
   },
   toggleLayer: (l) =>
     set((s) => ({ layers: { ...s.layers, [l]: !s.layers[l] } })),

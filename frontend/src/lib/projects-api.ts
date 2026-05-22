@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
-import type { Project, ProjectStatus, IntakeMode } from '../data/mock-projects'
-import { MOCK_PROJECTS } from '../data/mock-projects'
+import type { Project, ProjectStatus, IntakeMode } from '../data/projects'
+import { PROJECTS } from '../data/projects'
 
 const DEV_OWNER_ID = import.meta.env.VITE_DEV_OWNER_ID as string
 
@@ -87,42 +87,11 @@ function projectToRow(input: NewProjectInput) {
 // ---------- API ----------
 
 export async function listProjects(): Promise<Project[]> {
-  try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (error) throw error
-    const rows = (data as Record<string, unknown>[]).map(rowToProject)
-    if (rows.length === 0) {
-      console.warn('[projects-api] empty Supabase response — using MOCK_PROJECTS fallback')
-      return MOCK_PROJECTS
-    }
-    return rows
-  } catch (err) {
-    console.warn('[projects-api] Supabase listProjects failed — using MOCK_PROJECTS fallback:', err)
-    return MOCK_PROJECTS
-  }
+  return PROJECTS
 }
 
 export async function getProject(id: string): Promise<Project | null> {
-  try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single()
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return MOCK_PROJECTS.find((p) => p.id === id) ?? null
-      }
-      throw error
-    }
-    return rowToProject(data as Record<string, unknown>)
-  } catch (err) {
-    console.warn('[projects-api] Supabase getProject failed — using MOCK fallback:', err)
-    return MOCK_PROJECTS.find((p) => p.id === id) ?? null
-  }
+  return PROJECTS.find((p) => p.id === id) ?? null
 }
 
 export async function createProject(input: NewProjectInput): Promise<Project> {

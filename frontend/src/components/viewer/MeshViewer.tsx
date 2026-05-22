@@ -9,6 +9,7 @@ import HeatmapLegend from "./HeatmapLegend";
 import CoordReadout from "./CoordReadout";
 import LayerToggleBar from "./LayerToggleBar";
 import { useViewerStore } from "@/store/viewer-store";
+import { sunPositionFromHour } from "@/scene/geometry";
 
 /* MeshViewer — wraps r3f Canvas + HUD overlay layers.
  * Pass glbUrl to render an uploaded project GLB; omit to show the procedural demo scene. */
@@ -40,11 +41,17 @@ function GlbFallback() {
 
 export default function MeshViewer({ lat, lon, glbUrl }: { lat: number; lon: number; glbUrl?: string }) {
   const showShading = useViewerStore((s) => s.layers.shading);
+  const hour = useViewerStore((s) => s.hour);
+  const sun = useMemo(() => {
+    const v = sunPositionFromHour(hour);
+    const k = 7 / 22;
+    return { x: v.x * k, y: v.y * k, z: v.z * k };
+  }, [hour]);
 
   return (
     <div
       className="relative bg-blueprint rounded-2xl overflow-hidden cursor-crosshair-leaf"
-      style={{ border: "1px solid var(--rule)", aspectRatio: "16/9", minHeight: 520 }}
+      style={{ border: "1px solid var(--rule)", aspectRatio: "16/9", minHeight: 360 }}
     >
       {glbUrl ? (
         <Canvas
@@ -56,7 +63,7 @@ export default function MeshViewer({ lat, lon, glbUrl }: { lat: number; lon: num
           <color attach="background" args={["#f7f5ef"]} />
           <ambientLight intensity={0.9} />
           <hemisphereLight args={["#ffffff", "#94a3b8", 1.2]} />
-          <directionalLight castShadow position={[5, 7, 6]} intensity={2.8} shadow-mapSize={[2048, 2048]} />
+          <directionalLight castShadow position={[sun.x, sun.y, sun.z]} intensity={2.8} shadow-mapSize={[2048, 2048]} />
           <Suspense fallback={<GlbFallback />}>
             <Bounds fit clip observe margin={1.35}>
               <GlbModel url={glbUrl} />

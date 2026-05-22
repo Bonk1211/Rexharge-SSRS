@@ -6,10 +6,10 @@ interface HeroProps {
 }
 
 const PHRASES = [
-  "settled before tea.",
-  "priced before lunch.",
-  "modelled before dusk.",
-  "audited before tender.",
+  "reconstructed in 3D.",
+  "measured, not estimated.",
+  "reproducible every run.",
+  "auditable end to end.",
 ];
 
 function Typewriter({ phrases }: { phrases: string[] }) {
@@ -113,7 +113,7 @@ export default function Hero({ onTryClick }: HeroProps) {
                   boxShadow: "0 0 0 4px var(--leaf-tint)",
                 }}
               />
-              Solar Layout Studio
+              SfM-Grounded Solar Layout
             </div>
 
             <h1
@@ -126,7 +126,7 @@ export default function Hero({ onTryClick }: HeroProps) {
                 margin: 0,
               }}
             >
-              Rooftop solar,
+              No more hallucinated layouts.
               <br />
               <Typewriter phrases={PHRASES} />
             </h1>
@@ -137,13 +137,14 @@ export default function Hero({ onTryClick }: HeroProps) {
                 fontSize: 17,
                 lineHeight: 1.55,
                 color: "var(--ink-2)",
-                maxWidth: "48ch",
+                maxWidth: "52ch",
                 marginLeft: "auto",
                 marginRight: "auto",
                 fontWeight: 500,
               }}
             >
-              Drone footage to bankable rooftop design in under six minutes. PVGIS yield, ATAP NEM 3.0 settlement.
+              Multi-angle imagery to bankable rooftop design in 10 minutes residential, 15 minutes commercial.
+              Structure-from-motion geometry, Meteonorm TMY yield, TNB tariff engine — every number traceable to a formula.
             </p>
 
             <div className="flex items-center" style={{ gap: 14, marginTop: 32, justifyContent: "center" }}>

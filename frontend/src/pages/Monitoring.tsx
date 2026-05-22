@@ -11,7 +11,7 @@ import PowerCurveCard from "@/components/data/PowerCurveCard";
 import YieldVsTargetCard from "@/components/data/YieldVsTargetCard";
 import PortfolioGaugesRow from "@/components/data/PortfolioGaugesRow";
 import StatusPill from "@/components/chrome/StatusPill";
-import type { Project } from "@/data/mock-projects";
+import type { Project } from "@/data/projects";
 
 export default function Monitoring() {
   const { data: projects = [], isLoading } = useProjects();

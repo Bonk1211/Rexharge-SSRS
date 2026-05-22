@@ -1,7 +1,7 @@
 import MetricTile from "@/components/metrics/MetricTile";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import { SIM_CONSTANTS } from "@/lib/sim-constants";
-import type { Project } from "@/data/mock-projects";
+import type { Project } from "@/data/projects";
 import { formatTariff } from "@/data/case-study-buildings";
 
 const C = SIM_CONSTANTS;

@@ -4,12 +4,11 @@ import { useViewerStore, type Layer } from "@/store/viewer-store";
 
 const LAYERS: Array<{ key: Layer; label: string; Icon: React.FC<{ size?: number; className?: string }> }> = [
   { key: "mesh", label: "Mesh", Icon: ({ size }) => <Cube weight="duotone" size={size} /> },
-  { key: "planes", label: "Planes", Icon: ({ size }) => <Polygon weight="duotone" size={size} /> },
-  { key: "obstacles", label: "Obstacles", Icon: ({ size }) => <ParapetGlyph size={size} /> },
   { key: "panels", label: "Panels", Icon: ({ size }) => <PanelGlyph size={size} /> },
-  { key: "shading", label: "Shading", Icon: ({ size }) => <WaveSine weight="duotone" size={size} /> },
   { key: "sunpath", label: "Sun path", Icon: ({ size }) => <SunPathGlyph size={size} /> },
   { key: "grid", label: "Grid", Icon: ({ size }) => <Stack weight="duotone" size={size} /> },
+  { key: "irradiance", label: "Irradiance", Icon: ({ size }) => <WaveSine weight="duotone" size={size} /> },
+  { key: "wireframe", label: "Wireframe", Icon: ({ size }) => <Polygon weight="bold" size={size} /> },
 ];
 
 export default function LayerToggleBar() {

@@ -9,6 +9,7 @@ export default function MetricStack({
   payback,
   panels,
   capacityFactor,
+  panelWatts = 620,
 }: {
   kwp: number;
   kwh: number;
@@ -16,6 +17,7 @@ export default function MetricStack({
   payback: number;
   panels: number;
   capacityFactor: number;
+  panelWatts?: number;
 }) {
   return (
     <div
@@ -35,7 +37,7 @@ export default function MetricStack({
         decimals={2}
         unit="kWp"
         accent="leaf"
-        hint={`${panels} × 620 W modules`}
+        hint={`${panels} × ${panelWatts} W modules`}
         variant="lg"
         delay={120}
       />

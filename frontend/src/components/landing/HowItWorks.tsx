@@ -13,25 +13,25 @@ interface Step {
 const STEPS: Step[] = [
   {
     n: "01",
-    title: "Fly the roof.",
-    desc: "15 minutes with a Mavic 3E. Nadir grid plus 5-direction obliques. Upload the .ZIP, walk away.",
-    time: "15 min",
+    title: "Orbit the roof.",
+    desc: "Drone orbital at 15-25 m altitude. 8-12 geotagged photos, multi-angle. Upload, walk away.",
+    time: "5 min",
     Icon: DroneGlyph,
     tag: "Capture",
   },
   {
     n: "02",
-    title: "Lay it out.",
-    desc: "The studio auto-finds roof planes, vents, parapets. Drop panels by string. Swap inverters. Watch the kWh recalc as you draw.",
-    time: "6 min",
+    title: "Reconstruct, then optimise.",
+    desc: "SfM grounds the geometry. AI densifies the mesh. RANSAC extracts planes with tilt + azimuth + obstacle height. The placer searches under-200 configurations per plane and picks the max-fit.",
+    time: "10 min",
     Icon: PanelGlyph,
-    tag: "Design",
+    tag: "Reconstruct",
   },
   {
     n: "03",
-    title: "Quote in ringgit.",
-    desc: "ATAP NEM 3.0 sell-back. Payback, IRR, NPV — all live. Export bankable PDF, hand to the client over teh tarik.",
-    time: "2 min",
+    title: "Settle in ringgit.",
+    desc: "Meteonorm TMY yield, explicit PR stack, TNB tariff engine with marginal-tier kWh. Same site, two configurations — load-matched and max-fit — on one screen.",
+    time: "25 min",
     Icon: RinggitGlyph,
     tag: "Settle",
   },
@@ -85,7 +85,7 @@ export default function HowItWorks() {
                 marginBottom: 14,
               }}
             >
-              The flow · drone → ringgit
+              The flow · capture → settle
             </div>
             <h2
               className="numeral"
@@ -100,9 +100,9 @@ export default function HowItWorks() {
             >
               Three steps,{" "}
               <span className="display-soft" style={{ fontStyle: "italic" }}>
-                twenty-three minutes,
+                forty minutes,
               </span>{" "}
-              one tab.
+              one pipeline.
             </h2>
           </div>
           <div
@@ -118,7 +118,7 @@ export default function HowItWorks() {
               alignSelf: "end",
             }}
           >
-            ↘ measured on a typical 30 kWp warehouse
+            ↘ vs 2.5-4.5 h of senior engineer time
           </div>
         </div>
 
@@ -172,17 +172,17 @@ export default function HowItWorks() {
           }}
         >
           <p style={{ fontSize: 14, color: "var(--ink-2)", maxWidth: "60ch", lineHeight: 1.55, margin: 0 }}>
-            Every output is a real artefact, not a screenshot.{" "}
+            Every output traces back to a formula, not a model checkpoint.{" "}
             <span className="link-dotted" style={{ color: "var(--ink)", fontWeight: 700 }}>
-              CAD-clean DXF
+              Scaled mesh
             </span>{" "}
             for the engineer.{" "}
             <span className="link-dotted" style={{ color: "var(--ink)", fontWeight: 700 }}>
-              Bankable XLSX
+              Explicit PR stack
             </span>{" "}
             for the financier.{" "}
             <span className="link-dotted" style={{ color: "var(--ink)", fontWeight: 700 }}>
-              Proposal PDF
+              TNB tariff engine
             </span>{" "}
             for the client.
           </p>
@@ -195,7 +195,7 @@ export default function HowItWorks() {
               letterSpacing: "0.22em",
             }}
           >
-            DXF · XLSX · PDF · ATAP-ready forms
+            SfM · Meteonorm TMY · TNB tariff · NEM 3.0
           </div>
         </div>
       </div>

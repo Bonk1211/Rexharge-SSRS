@@ -32,7 +32,18 @@ export default defineConfig(({ mode }) => {
         "/cs-assets": {
           target: "https://solar.limziyang.ml",
           changeOrigin: true,
+          secure: true,
+          timeout: 600000,
+          proxyTimeout: 600000,
           rewrite: (p) => p.replace(/^\/cs-assets/, "/static"),
+          configure: (proxy) => {
+            proxy.on("proxyRes", (proxyRes) => {
+              delete proxyRes.headers["cache-control"];
+              delete proxyRes.headers["pragma"];
+              delete proxyRes.headers["expires"];
+              proxyRes.headers["cache-control"] = "public, max-age=86400, immutable";
+            });
+          },
         },
       },
     },

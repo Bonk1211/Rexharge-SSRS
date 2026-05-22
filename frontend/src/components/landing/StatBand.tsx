@@ -6,25 +6,25 @@ interface Stat {
 }
 
 const STATS: Stat[] = [
-  { label: "Simulated · since Q1'24", value: "412", unit: "MWp", accent: "var(--leaf-deep)" },
-  { label: "Rooftops modelled", value: "1,847", unit: "sites", accent: "var(--ink)" },
-  { label: "Annual savings designed", value: "RM 11.2", unit: "M", accent: "var(--leaf-deep)" },
-  { label: "Yield accuracy", value: "94", unit: "% vs measured", accent: "var(--ink)" },
+  { label: "Runtime · residential roof", value: "10", unit: "min · vs 2.5–4.5 h", accent: "var(--leaf-deep)" },
+  { label: "Annual yield variance", value: "<0.01", unit: "% reproducible", accent: "var(--ink)" },
+  { label: "Cost per quotation", value: "−76", unit: "% vs manual", accent: "var(--leaf-deep)" },
+  { label: "Engineer throughput", value: "3-4", unit: "× lift", accent: "var(--ink)" },
 ];
 
 const TICKER_SITES = [
-  "Sentul Warehouse 04",
-  "USJ Logistics Hub",
-  "Bangi Bio-Park",
-  "Cyberjaya Data Centre 02",
-  "Klang Coldstore",
-  "Penang Cosmetics Plant",
-  "Skudai Furniture Mill",
-  "Bukit Jelutong CDC",
-  "Ipoh Cement Silo 7",
-  "Kuching Palm-oil Refinery",
-  "Shah Alam Pharma 03",
-  "Subang Polyclinic",
+  "SfM sparse reconstruction",
+  "AI mesh densification",
+  "GPS-anchored metric scaling",
+  "RANSAC plane fitting",
+  "Obstacle height extraction",
+  "Edge + obstacle setback",
+  "Inter-row pitch · worst-case 9 AM",
+  "Meteonorm TMY · 8,760 hr",
+  "3D ray-traced shading",
+  "Explicit PR loss stack",
+  "TNB tariff · marginal tier",
+  "ATAP NEM 3.0 sell-back",
 ];
 
 export default function StatBand() {
@@ -125,7 +125,7 @@ const ProofTicker = () => {
           zIndex: 2,
         }}
       >
-        Sites in pipeline ↓
+        Pipeline stages ↓
       </div>
       <div className="ticker-track" style={{ paddingLeft: 180, gap: 32 }}>
         {seq.map((label, i) => (

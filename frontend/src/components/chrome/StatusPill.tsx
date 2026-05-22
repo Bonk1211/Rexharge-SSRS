@@ -1,5 +1,5 @@
 import { CheckCircle, ArrowsClockwise, Warning, DotsThree } from "@/icons";
-import type { ProjectStatus } from "@/data/mock-projects";
+import type { ProjectStatus } from "@/data/projects";
 
 const config = {
   ready: {

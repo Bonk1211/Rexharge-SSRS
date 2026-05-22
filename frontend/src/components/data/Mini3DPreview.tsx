@@ -18,7 +18,7 @@ import {
 import * as THREE from "three";
 import RoofScene from "@/scene/RoofScene";
 import { useGlbUrl } from "@/lib/glb-url";
-import type { Project } from "@/data/mock-projects";
+import type { Project } from "@/data/projects";
 
 class GlbErrorBoundary extends Component<
   { onError: () => void; children: ReactNode },

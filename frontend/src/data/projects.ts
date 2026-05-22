@@ -2,6 +2,20 @@ import {
   CASE_STUDY_BUILDINGS,
   type CaseStudyBuilding,
 } from "./case-study-buildings";
+import { extractMetricsFromReport } from "./project-reports";
+import ecoHorizonReport from "./reports/eco_horizon.json";
+import ssuUmReport from "./reports/ssu_um.json";
+import householdReport from "./reports/household.json";
+import starGrocerReport from "./reports/star_grocer.json";
+import rainbowReport from "./reports/rainbow.json";
+
+const REPORTS_BY_ID: Record<string, unknown> = {
+  "eco-horizon": ecoHorizonReport,
+  "ssu-um": ssuUmReport,
+  "household": householdReport,
+  "star-grocer": starGrocerReport,
+  "rainbow": rainbowReport,
+};
 
 export type ProjectStatus = "ready" | "processing" | "draft" | "failed";
 export type IntakeMode = "drone_video" | "photos" | "demo";
@@ -56,37 +70,9 @@ function monthly(annual: number): number[] {
   return MONTHLY_SHAPE.map((f) => Math.round(annual * f));
 }
 
-type PerfOverride = Pick<
-  Project,
-  | "kwp"
-  | "annualKwh"
-  | "annualSavingsRm"
-  | "paybackYears"
-  | "panels"
-  | "capacityFactor"
->;
-
-const PERF_OVERRIDES: Record<string, PerfOverride> = {
-  "ssu-um": {
-    kwp: 116.6,
-    annualKwh: 162900,
-    annualSavingsRm: 33327,
-    paybackYears: 13.3,
-    panels: 188,
-    capacityFactor: 0.159,
-  },
-  "eco-horizon": {
-    kwp: 64.5,
-    annualKwh: 90100,
-    annualSavingsRm: 3716,
-    paybackYears: 65.9,
-    panels: 104,
-    capacityFactor: 0.161,
-  },
-};
-
 function makeProject(b: CaseStudyBuilding): Project {
-  const perf = PERF_OVERRIDES[b.reportId];
+  const report = REPORTS_BY_ID[b.reportId];
+  const m = extractMetricsFromReport(report);
   return {
     id: b.uuid,
     name: b.name,
@@ -97,15 +83,15 @@ function makeProject(b: CaseStudyBuilding): Project {
     status: "ready",
     capturedAt: CAPTURED_AT,
     thumbnailHue: b.thumbnailHue,
-    kwp: perf?.kwp ?? 0,
-    annualKwh: perf?.annualKwh ?? 0,
-    annualSavingsRm: perf?.annualSavingsRm ?? 0,
-    paybackYears: perf?.paybackYears ?? 0,
-    monthlyKwh: perf?.annualKwh ? monthly(perf.annualKwh) : [],
-    panels: perf?.panels ?? 0,
+    kwp: m?.kwp ?? 0,
+    annualKwh: m?.annualKwh ?? 0,
+    annualSavingsRm: m?.annualSavingsRm ?? 0,
+    paybackYears: m?.paybackYears ?? 0,
+    monthlyKwh: m?.annualKwh ? monthly(m.annualKwh) : [],
+    panels: m?.panels ?? 0,
     planes: 0,
     obstacles: 0,
-    capacityFactor: perf?.capacityFactor ?? 0,
+    capacityFactor: m?.capacityFactor ?? 0,
     reportId: b.reportId,
     modelGlbPath: b.modelGlbUrl,
     measurementImgPath: b.measurementImgUrl,
@@ -115,4 +101,4 @@ function makeProject(b: CaseStudyBuilding): Project {
   };
 }
 
-export const MOCK_PROJECTS: Project[] = CASE_STUDY_BUILDINGS.map(makeProject);
+export const PROJECTS: Project[] = CASE_STUDY_BUILDINGS.map(makeProject);

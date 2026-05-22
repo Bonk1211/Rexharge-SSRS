@@ -1,4 +1,4 @@
-import type { Project } from "@/data/mock-projects";
+import type { Project } from "@/data/projects";
 
 const MONTH_LABELS = [
   "Jan",

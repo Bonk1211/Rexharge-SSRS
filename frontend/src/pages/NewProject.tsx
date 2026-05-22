@@ -6,7 +6,7 @@ import HairlineRule from "@/components/chrome/HairlineRule";
 import Workspace3DSection from "@/components/workspace3d/Workspace3DSection";
 import { useCreateProject } from "@/store/projects-store";
 import { updateProject, uploadAsset, logEvent } from "@/lib/projects-api";
-import type { IntakeMode } from "@/data/mock-projects";
+import type { IntakeMode } from "@/data/projects";
 
 // ---------- types ----------
 

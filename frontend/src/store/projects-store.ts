@@ -7,7 +7,7 @@ import {
   getSignedUrl,
   type NewProjectInput,
 } from '../lib/projects-api'
-import type { Project } from '../data/mock-projects'
+import type { Project } from '../data/projects'
 import {
   buildGaugeValues,
   buildHourlyPowerCurve,

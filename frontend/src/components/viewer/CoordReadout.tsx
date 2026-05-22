@@ -14,8 +14,7 @@ export default function CoordReadout({ lat = 3.0578, lon = 101.6612 }: { lat?: n
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      const target = (e.currentTarget as HTMLElement) ?? document.documentElement;
-      const rect = (target as HTMLElement).getBoundingClientRect();
+      const rect = document.documentElement.getBoundingClientRect();
       setPos({
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
