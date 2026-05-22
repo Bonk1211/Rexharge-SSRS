@@ -138,7 +138,7 @@ export default function ProjectDetail() {
 
         <div className="flex items-center gap-2">
           <a
-            href={buildSimulatorUrl(project)}
+            href="https://solar.limziyang.ml/simulator?model=%2Fstatic%2Fmodels%2Fvideo_7%2F3DModel.glb&lat=5.237826&lng=100.452277&usage=700&tariff=domestic&gmap=%2Fstatic%2Fmeasurement%2Feco_horizon.png"
             target="_blank"
             rel="noreferrer"
             className="px-3.5 h-10 inline-flex items-center gap-2 rounded-full text-[12px] font-bold text-paper"
