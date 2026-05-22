@@ -20,7 +20,7 @@ export default function Wordmark({ compact }: WordmarkProps) {
               lineHeight: 1,
             }}
           >
-            xcharge
+            xharge
           </span>
           <svg
             aria-hidden
