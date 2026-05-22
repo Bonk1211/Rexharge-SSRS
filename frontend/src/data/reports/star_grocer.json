@@ -4,7 +4,7 @@
     "latitude": 3.1068265,
     "longitude": 101.6241227,
     "scenarioName": "Custom",
-    "modelUrl": "/static/models/video_5/3DModel.glb"
+    "modelUrl": "/models/video_5/3DModel.glb"
   },
   "scaleCalibration": {
     "scaleFactor": "0.030260",

@@ -21,12 +21,10 @@ export function resolveModelUrl(url: string | null | undefined): string {
   if (!url) return "";
   if (ABSOLUTE_URL.test(url)) return maybeProxy(url);
   if (url.startsWith("/static/")) {
-    return import.meta.env.DEV
-      ? DEV_PROXY_BASE + url.slice("/static".length)
-      : REMOTE_BASE + url.slice("/static".length);
+    return url.slice("/static".length);
   }
   if (url.startsWith("/")) {
-    return import.meta.env.DEV ? DEV_PROXY_BASE + url : REMOTE_BASE + url;
+    return url;
   }
   return url;
 }
