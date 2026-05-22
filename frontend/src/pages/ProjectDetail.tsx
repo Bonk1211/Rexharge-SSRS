@@ -20,14 +20,25 @@ import type { Project } from "@/data/projects";
 import { tariffCodeFromString } from "@/data/case-study-buildings";
 import { useGlbUrl } from "@/lib/glb-url";
 
+function toSimulatorAssetPath(p: string | null | undefined): string | null {
+  if (!p) return null;
+  if (/^https?:\/\//i.test(p)) return p;
+  if (p.startsWith("/static/")) return p;
+  if (p.startsWith("/")) return `/static${p}`;
+  return `/static/${p}`;
+}
+
 function buildSimulatorUrl(p: Project): string {
   const params = new URLSearchParams();
-  if (p.modelGlbPath) params.set("model", p.modelGlbPath);
+  const model = toSimulatorAssetPath(p.modelGlbPath);
+  if (model) params.set("model", model);
   params.set("lat", String(p.lat));
   params.set("lng", String(p.lon));
   if (p.monthlyUsageKwh != null) params.set("usage", String(p.monthlyUsageKwh));
   const code = tariffCodeFromString(p.tariffType);
   if (code) params.set("tariff", code);
+  const gmap = toSimulatorAssetPath(p.measurementImgPath);
+  if (gmap) params.set("gmap", gmap);
   return `${__SIMULATOR_URL__}/simulator?${params.toString()}`;
 }
 
