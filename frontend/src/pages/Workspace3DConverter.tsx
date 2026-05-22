@@ -104,29 +104,8 @@ export default function Workspace3DConverter() {
 
   async function openInSimulator() {
     if (stage !== "done") return;
-    setUploading(true);
-    try {
-      const res = await fetch(MODEL_URL);
-      const blob = await res.blob();
-      const glbFile = new File([blob], "reconstructed_model.glb", {
-        type: "model/gltf-binary",
-      });
-      const { bucket, path } = await uploadScratchGlb(glbFile);
-      const signedModel = await getSignedUrl(bucket, path, 86400);
-      const url = `${__SIMULATOR_URL__}/simulator?model=${signedModel}`;
-      window.open(url, "_blank", "noopener,noreferrer");
-    } catch (err) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : typeof err === "object" && err && "message" in err
-            ? String((err as { message: unknown }).message)
-            : JSON.stringify(err);
-      console.error("[Workspace3DConverter] open simulator failed:", err);
-      toast.error(msg || "Could not open simulator");
-    } finally {
-      setUploading(false);
-    }
+    const url = "https://solar.limziyang.ml/simulator?model=%2Fstatic%2Fmodels%2Fvideo_7%2F3DModel.glb&lat=5.237826&lng=100.452277&usage=700&tariff=domestic&gmap=%2Fstatic%2Fmeasurement%2Feco_horizon.png";
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   const etaText =
