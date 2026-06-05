@@ -9,12 +9,19 @@ import {
   loadDemoPhotoFiles,
 } from "@/data/demo-photos";
 
-type Mode = "photos" | "drone" | "mesh";
+type Mode = "photos" | "drone";
 type Quality = "standard" | "lightweight";
 type Format = "glb" | "gltf" | "obj";
 type Stage = "idle" | "processing" | "done";
 
 const MODEL_URL = "/models/econ_horizon_3D.glb";
+
+// Self-hosted drone footage (native <video>, zero third-party branding).
+const DRONE_VIDEO_SRC = "/models/video_2/rexharge_video_2.mp4";
+const DRONE_VIDEO_TITLE = "rexharge_video_2.mp4";
+
+// Drone-mode result model, served locally from /public/models/video_2/.
+const DRONE_MODEL_URL = "/models/video_2/3DModel.glb";
 
 interface HistoryItem {
   id: string;
@@ -40,7 +47,11 @@ export default function Workspace3DConverter() {
   const [progress, setProgress] = useState(0);
   const [loadingSample, setLoadingSample] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [droneLoaded, setDroneLoaded] = useState(false);
   const timersRef = useRef<number[]>([]);
+
+  const isDrone = mode === "drone";
+  const resultModelUrl = isDrone ? DRONE_MODEL_URL : MODEL_URL;
 
   useEffect(() => () => {
     timersRef.current.forEach((t) => window.clearTimeout(t));
@@ -95,6 +106,11 @@ export default function Workspace3DConverter() {
 
   function generate() {
     if (stage === "processing") return;
+    if (isDrone) {
+      if (!droneLoaded) setDroneLoaded(true);
+      runTimers();
+      return;
+    }
     if (photos.length === 0) {
       void loadSample().then(() => runTimers());
       return;
@@ -113,14 +129,27 @@ export default function Workspace3DConverter() {
       ? `~${Math.max(1, Math.round((100 - progress) * 0.025))} min`
       : "~2 min";
 
-  const history: HistoryItem[] = photos.map((file, i) => ({
-    id: `photo-${i}-${file.name}`,
-    title: `Rooftop ${String(i + 1).padStart(2, "0")}`,
-    status: "ready",
-    meta: formatPhotoSize(file.size),
-    group: "Today",
-    imageUrl: photoPreviewUrls[i],
-  }));
+  const history: HistoryItem[] = isDrone
+    ? droneLoaded
+      ? [
+          {
+            id: "drone-video",
+            title: DRONE_VIDEO_TITLE,
+            status: "ready",
+            meta: "YouTube ref",
+            group: "Today",
+            imageUrl: null,
+          },
+        ]
+      : []
+    : photos.map((file, i) => ({
+        id: `photo-${i}-${file.name}`,
+        title: `Rooftop ${String(i + 1).padStart(2, "0")}`,
+        status: "ready",
+        meta: formatPhotoSize(file.size),
+        group: "Today",
+        imageUrl: photoPreviewUrls[i],
+      }));
 
   const todays = history;
 
@@ -149,44 +178,56 @@ export default function Workspace3DConverter() {
         className="flex flex-col min-h-0"
         style={{ gridArea: "left", borderRight: "1px solid var(--rule)" }}
       >
-        <div className="grid grid-cols-3 gap-1.5 p-4 pb-0">
+        <div className="grid grid-cols-2 gap-1.5 p-4 pb-0">
           <ModeTab active={mode === "photos"} onClick={() => setMode("photos")} label="Photos">
             <PhotosIcon />
           </ModeTab>
           <ModeTab active={mode === "drone"} onClick={() => setMode("drone")} label="Drone">
             <DroneIcon />
           </ModeTab>
-          <ModeTab active={mode === "mesh"} onClick={() => setMode("mesh")} label="Mesh">
-            <MeshIcon />
-          </ModeTab>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-[18px]">
-          <div>
-            <FieldLabel right="3–48 imgs">Rooftop photos</FieldLabel>
-            <button
-              type="button"
-              onClick={loadSample}
-              disabled={loadingSample}
-              className="block w-full text-center rounded-xl px-3.5 py-[22px] transition-colors disabled:opacity-60"
-              style={{
-                border: "1px dashed var(--rule)",
-                background: photos.length > 0 ? "var(--leaf-tint)" : "var(--surface)",
-              }}
-            >
-              <DropzoneArt />
-              <div className="mt-2 text-[13px] font-bold text-ink">
-                {loadingSample
-                  ? "Loading sample…"
-                  : photos.length > 0
-                    ? `${photos.length} photos loaded`
-                    : "Click, drag, or paste"}
-              </div>
-              <div className="mono text-[9.5px] uppercase tracking-[0.14em] text-mute mt-1">
-                PNG · JPG · DJI
-              </div>
-            </button>
-          </div>
+          {isDrone ? (
+            <div>
+              <FieldLabel right="1 clip">Drone video</FieldLabel>
+              {droneLoaded ? (
+                <DroneVideoCard
+                  src={DRONE_VIDEO_SRC}
+                  title={DRONE_VIDEO_TITLE}
+                  variant="loaded"
+                />
+              ) : (
+                <DroneUploadButton onClick={() => setDroneLoaded(true)} />
+              )}
+            </div>
+          ) : (
+            <div>
+              <FieldLabel right="3–48 imgs">Rooftop photos</FieldLabel>
+              <button
+                type="button"
+                onClick={loadSample}
+                disabled={loadingSample}
+                className="block w-full text-center rounded-xl px-3.5 py-[22px] transition-colors disabled:opacity-60"
+                style={{
+                  border: "1px dashed var(--rule)",
+                  background: photos.length > 0 ? "var(--leaf-tint)" : "var(--surface)",
+                }}
+              >
+                <DropzoneArt />
+                <div className="mt-2 text-[13px] font-bold text-ink">
+                  {loadingSample
+                    ? "Loading sample…"
+                    : photos.length > 0
+                      ? `${photos.length} photos loaded`
+                      : "Click, drag, or paste"}
+                </div>
+                <div className="mono text-[9.5px] uppercase tracking-[0.14em] text-mute mt-1">
+                  PNG · JPG · DJI
+                </div>
+              </button>
+            </div>
+          )}
 
           <div>
             <FieldLabel>Quality</FieldLabel>
@@ -280,16 +321,18 @@ export default function Workspace3DConverter() {
                   boxShadow: "0 0 0 3px var(--leaf-tint)",
                 }}
               />
-              Textured GLB · {photos.length} photo{photos.length === 1 ? "" : "s"}
+              {isDrone
+                ? "Textured GLB · from drone video"
+                : `Textured GLB · ${photos.length} photo${photos.length === 1 ? "" : "s"}`}
             </div>
 
             <div className="mx-auto w-full max-w-[860px]">
-              <MeshViewer lat={3.139} lon={101.687} glbUrl={MODEL_URL} />
+              <MeshViewer lat={3.139} lon={101.687} glbUrl={resultModelUrl} />
             </div>
 
             <div className="flex items-center justify-center gap-3.5">
               <a
-                href={MODEL_URL}
+                href={resultModelUrl}
                 download="reconstructed_model.glb"
                 className="inline-flex h-10 items-center gap-2 rounded-full px-5 text-[12.5px] font-extrabold text-paper transition-colors hover:opacity-90"
                 style={{ background: "var(--leaf-deep)" }}
@@ -335,7 +378,7 @@ export default function Workspace3DConverter() {
                   boxShadow: "0 0 0 3px var(--leaf-tint)",
                 }}
               />
-              Photo set · textured GLB
+              {isDrone ? "Drone video · textured GLB" : "Photo set · textured GLB"}
             </div>
 
             <h1
@@ -422,6 +465,36 @@ export default function Workspace3DConverter() {
         className="flex flex-col min-h-0"
         style={{ gridArea: "right", borderLeft: "1px solid var(--rule)" }}
       >
+        {isDrone ? (
+          <div
+            className="px-4 py-3.5"
+            style={{ borderBottom: "1px solid var(--rule)" }}
+          >
+            <div className="mono text-[10px] uppercase tracking-[0.16em] text-mute mb-2.5">
+              Reference video
+            </div>
+            {droneLoaded ? (
+              <DroneVideoCard
+                src={DRONE_VIDEO_SRC}
+                title={DRONE_VIDEO_TITLE}
+                variant="player"
+              />
+            ) : (
+              <div
+                className="rounded-xl flex items-center justify-center text-center px-3"
+                style={{
+                  aspectRatio: "16 / 9",
+                  border: "1px dashed var(--rule)",
+                  background: "var(--surface-2)",
+                }}
+              >
+                <span className="mono text-[10px] uppercase tracking-[0.14em] text-mute">
+                  No footage uploaded yet
+                </span>
+              </div>
+            )}
+          </div>
+        ) : (
         <div
           className="px-4 py-3.5 flex items-center gap-2"
           style={{ borderBottom: "1px solid var(--rule)" }}
@@ -473,6 +546,7 @@ export default function Workspace3DConverter() {
             Upload
           </button>
         </div>
+        )}
 
         <div className="flex-1 overflow-y-auto px-4 py-3.5 flex flex-col gap-2.5">
           {todays.length > 0 && <HistoryGroupLabel>Today</HistoryGroupLabel>}
@@ -695,6 +769,88 @@ function HistoryCard({ item }: { item: HistoryItem }) {
 
 // ---- art ----
 
+function DroneUploadButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="block w-full text-center rounded-xl px-3.5 py-[22px] transition-colors hover:bg-leaf-tint"
+      style={{ border: "1px dashed var(--rule)", background: "var(--surface)" }}
+    >
+      <span
+        className="mx-auto flex items-center justify-center"
+        style={{ width: 44, height: 44, color: "var(--ink-2)" }}
+      >
+        <DroneIcon />
+      </span>
+      <div className="mt-2 text-[13px] font-bold text-ink">Upload drone footage</div>
+      <div className="mono text-[9.5px] uppercase tracking-[0.14em] text-mute mt-1">
+        MP4 · MOV · DJI
+      </div>
+    </button>
+  );
+}
+
+function DroneVideoCard({
+  src,
+  title,
+  variant,
+}: {
+  src: string;
+  title: string;
+  variant: "player" | "loaded";
+}) {
+  return (
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{ border: "1px solid var(--rule)", background: "var(--surface)" }}
+    >
+      <div
+        className="relative w-full overflow-hidden"
+        style={{ aspectRatio: "16 / 9", background: "var(--surface-2)" }}
+      >
+        {variant === "player" ? (
+          // Self-hosted clip: autoplay muted loop, no controls → zero branding.
+          <video
+            src={src}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          // Loaded indicator: first frame only, no playback.
+          <video
+            src={`${src}#t=0.1`}
+            muted
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+      </div>
+      <div className="px-3 py-2 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <div className="text-[13px] font-bold text-ink truncate">{title}</div>
+          <div className="mono text-[9.5px] uppercase tracking-[0.14em] text-mute mt-1">
+            REF · DRONE VIDEO
+          </div>
+        </div>
+        {variant === "loaded" && (
+          <span
+            className="mono text-[9.5px] uppercase tracking-[0.14em] whitespace-nowrap"
+            style={{ color: "var(--leaf-deep)" }}
+          >
+            ● Loaded
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DropzoneArt() {
   return (
     <div className="relative mx-auto" style={{ width: 64, height: 48 }}>
@@ -904,16 +1060,6 @@ function DroneIcon() {
       <circle cx="20" cy="12" r="1.5" />
       <circle cx="12" cy="4" r="1.5" />
       <circle cx="12" cy="20" r="1.5" />
-    </svg>
-  );
-}
-
-function MeshIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3 L21 8 V16 L12 21 L3 16 V8 Z" />
-      <path d="M3 8 L12 13 L21 8" />
-      <path d="M12 13 V21" />
     </svg>
   );
 }
