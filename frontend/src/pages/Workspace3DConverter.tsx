@@ -48,6 +48,7 @@ export default function Workspace3DConverter() {
   const [loadingSample, setLoadingSample] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [droneLoaded, setDroneLoaded] = useState(false);
+  const [videoExpanded, setVideoExpanded] = useState(false);
   const timersRef = useRef<number[]>([]);
 
   const isDrone = mode === "drone";
@@ -478,6 +479,7 @@ export default function Workspace3DConverter() {
                 src={DRONE_VIDEO_SRC}
                 title={DRONE_VIDEO_TITLE}
                 variant="player"
+                onExpand={() => setVideoExpanded(true)}
               />
             ) : (
               <div
@@ -568,6 +570,13 @@ export default function Workspace3DConverter() {
           <span>v3.2.1</span>
         </div>
       </aside>
+
+      <ReferenceVideoModal
+        open={videoExpanded}
+        onClose={() => setVideoExpanded(false)}
+        src={DRONE_VIDEO_SRC}
+        title={DRONE_VIDEO_TITLE}
+      />
     </div>
   );
 }
@@ -795,10 +804,12 @@ function DroneVideoCard({
   src,
   title,
   variant,
+  onExpand,
 }: {
   src: string;
   title: string;
   variant: "player" | "loaded";
+  onExpand?: () => void;
 }) {
   return (
     <div
@@ -806,20 +817,38 @@ function DroneVideoCard({
       style={{ border: "1px solid var(--rule)", background: "var(--surface)" }}
     >
       <div
-        className="relative w-full overflow-hidden"
+        className={`group relative w-full overflow-hidden${
+          variant === "player" && onExpand ? " cursor-zoom-in" : ""
+        }`}
         style={{ aspectRatio: "16 / 9", background: "var(--surface-2)" }}
+        onClick={variant === "player" ? onExpand : undefined}
       >
         {variant === "player" ? (
           // Self-hosted clip: autoplay muted loop, no controls → zero branding.
-          <video
-            src={src}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <>
+            <video
+              src={src}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {onExpand && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onExpand();
+                }}
+                aria-label="Expand reference video"
+                className="absolute top-2 right-2 inline-flex items-center justify-center w-7 h-7 rounded-full bg-ink/65 text-paper opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 hover:bg-ink"
+              >
+                <ExpandIcon />
+              </button>
+            )}
+          </>
         ) : (
           // Loaded indicator: first frame only, no playback.
           <video
@@ -848,6 +877,135 @@ function DroneVideoCard({
         )}
       </div>
     </div>
+  );
+}
+
+function ReferenceVideoModal({
+  open,
+  onClose,
+  src,
+  title,
+}: {
+  open: boolean;
+  onClose: () => void;
+  src: string;
+  title: string;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      role="presentation"
+      onClick={onClose}
+      className="fixed inset-0 z-50 grid place-items-center bg-ink/45 backdrop-blur-sm p-6"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ref-video-title"
+        onClick={(event) => event.stopPropagation()}
+        className="relative rounded-2xl bg-surface w-[92vw] max-w-[860px] overflow-hidden"
+        style={{
+          border: "1px solid var(--rule)",
+          boxShadow: "0 30px 80px -20px rgba(0,0,0,0.35)",
+        }}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close reference video"
+          className="absolute top-3 right-3 z-10 inline-flex items-center justify-center w-9 h-9 rounded-full bg-ink/65 text-paper transition-colors hover:bg-ink"
+        >
+          <CloseIcon />
+        </button>
+
+        <div
+          className="relative w-full overflow-hidden"
+          style={{ aspectRatio: "16 / 9", background: "var(--ink)" }}
+        >
+          {/* Expanded view: full controls so the footage can be inspected frame-by-frame. */}
+          <video
+            src={src}
+            autoPlay
+            muted
+            loop
+            controls
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-contain"
+          />
+        </div>
+
+        <div className="px-6 py-5">
+          <div className="mono text-[10px] uppercase tracking-[0.2em] text-leaf-deep mb-2">
+            Reference video
+          </div>
+          <h2
+            id="ref-video-title"
+            className="numeral text-[22px] tracking-[-0.02em] text-ink truncate"
+            style={{ fontWeight: 600 }}
+          >
+            {title}
+          </h2>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExpandIcon() {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M5 1 H1 V5 M9 1 H13 V5 M5 13 H1 V9 M9 13 H13 V9" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      aria-hidden
+    >
+      <path d="M4 4 L12 12 M12 4 L4 12" />
+    </svg>
   );
 }
 
