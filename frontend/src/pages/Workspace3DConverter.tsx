@@ -42,6 +42,8 @@ export default function Workspace3DConverter() {
   const [mode, setMode] = useState<Mode>("photos");
   const [quality, setQuality] = useState<Quality>("standard");
   const [format, setFormat] = useState<Format>("glb");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [stage, setStage] = useState<Stage>("idle");
   const [progress, setProgress] = useState(0);
@@ -53,6 +55,14 @@ export default function Workspace3DConverter() {
 
   const isDrone = mode === "drone";
   const resultModelUrl = isDrone ? DRONE_MODEL_URL : MODEL_URL;
+
+  const parsedLat = Number.parseFloat(latitude);
+  const parsedLng = Number.parseFloat(longitude);
+  const hasLocation =
+    Number.isFinite(parsedLat) &&
+    Math.abs(parsedLat) <= 90 &&
+    Number.isFinite(parsedLng) &&
+    Math.abs(parsedLng) <= 180;
 
   useEffect(() => () => {
     timersRef.current.forEach((t) => window.clearTimeout(t));
@@ -254,6 +264,33 @@ export default function Workspace3DConverter() {
               ]}
             />
           </div>
+
+          <div>
+            <FieldLabel right="WGS84">Rooftop location</FieldLabel>
+            <div className="grid grid-cols-2 gap-1.5">
+              <CoordinateField
+                label="Lat"
+                value={latitude}
+                onChange={setLatitude}
+                placeholder="3.139000"
+                min={-90}
+                max={90}
+              />
+              <CoordinateField
+                label="Lng"
+                value={longitude}
+                onChange={setLongitude}
+                placeholder="101.687000"
+                min={-180}
+                max={180}
+              />
+            </div>
+            <div className="mono text-[9.5px] uppercase tracking-[0.14em] text-mute mt-1.5">
+              {hasLocation
+                ? `${parsedLat.toFixed(6)}, ${parsedLng.toFixed(6)}`
+                : "Decimal degrees · optional"}
+            </div>
+          </div>
         </div>
 
         <div className="p-4" style={{ borderTop: "1px solid var(--rule)" }}>
@@ -328,7 +365,11 @@ export default function Workspace3DConverter() {
             </div>
 
             <div className="mx-auto w-full max-w-[860px]">
-              <MeshViewer lat={3.139} lon={101.687} glbUrl={resultModelUrl} />
+              <MeshViewer
+                lat={hasLocation ? parsedLat : 3.139}
+                lon={hasLocation ? parsedLng : 101.687}
+                glbUrl={resultModelUrl}
+              />
             </div>
 
             <div className="flex items-center justify-center gap-3.5">
@@ -682,6 +723,46 @@ function Segmented<T extends string>({
         );
       })}
     </div>
+  );
+}
+
+function CoordinateField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  min,
+  max,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  min: number;
+  max: number;
+}) {
+  return (
+    <label
+      className="flex items-center gap-2 rounded-lg px-2.5 py-2"
+      style={{ border: "1px solid var(--rule)", background: "var(--surface)" }}
+    >
+      <span
+        className="mono uppercase"
+        style={{ fontSize: 9.5, letterSpacing: "0.14em", color: "var(--mute)" }}
+      >
+        {label}
+      </span>
+      <input
+        type="number"
+        step="any"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full min-w-0 bg-transparent border-0 outline-none text-[12px] font-bold text-ink placeholder:text-mute placeholder:font-medium"
+      />
+    </label>
   );
 }
 
