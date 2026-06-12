@@ -3,8 +3,6 @@ import {
   listProjects,
   getProject,
   createProject,
-  uploadAsset,
-  getSignedUrl,
   type NewProjectInput,
 } from '../lib/projects-api'
 import type { Project } from '../data/projects'
@@ -19,7 +17,6 @@ import {
 const KEYS = {
   projects: ['projects'] as const,
   project: (id: string) => ['projects', id] as const,
-  signedUrl: (bucket: string, path: string) => ['signed-url', bucket, path] as const,
 }
 
 // ---------- hooks ----------
@@ -70,28 +67,3 @@ export function useCreateProject() {
   })
 }
 
-export function useUploadAsset() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: ({
-      projectId,
-      file,
-      kind,
-    }: {
-      projectId: string
-      file: File
-      kind: Parameters<typeof uploadAsset>[2]
-    }) => uploadAsset(projectId, file, kind),
-    onSuccess: (_data, vars) =>
-      qc.invalidateQueries({ queryKey: KEYS.project(vars.projectId) }),
-  })
-}
-
-export function useSignedUrl(bucket: string | undefined, path: string | undefined) {
-  return useQuery({
-    queryKey: KEYS.signedUrl(bucket ?? '', path ?? ''),
-    queryFn: () => getSignedUrl(bucket!, path!),
-    enabled: !!bucket && !!path,
-    staleTime: 50 * 60 * 1000, // refresh before 1-hour expiry
-  })
-}

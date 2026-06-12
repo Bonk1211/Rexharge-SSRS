@@ -3,7 +3,7 @@ import { ArrowsClockwise, CheckCircle, Sparkle, Warning } from "@/icons";
 import { listEvents, type ProjectEvent } from "@/lib/projects-api";
 import { useProjects } from "@/store/projects-store";
 
-/* Activity feed — recent pipeline events from Supabase.
+/* Activity feed — recent pipeline events (static demo data).
  * Hairline timeline with mono timestamps. */
 
 type Kind = "ready" | "processing" | "failed" | "atap";

@@ -1,13 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowUpRight } from "@/icons";
 import { useProject } from "@/store/projects-store";
 import HairlineRule from "@/components/chrome/HairlineRule";
 import StatusPill from "@/components/chrome/StatusPill";
 import SectionTabs from "@/components/chrome/SectionTabs";
-import ExportedSceneViewer from "@/components/viewer/ExportedSceneViewer";
-import MeshViewer from "@/components/viewer/MeshViewer";
-import SunPathScrubber from "@/components/viewer/SunPathScrubber";
 import MetricStack from "@/components/metrics/MetricStack";
 import ProjectDashboard from "@/components/data/ProjectDashboard";
 import {
@@ -17,30 +13,6 @@ import {
   type FullProjectReport,
 } from "@/data/project-reports";
 import type { Project } from "@/data/projects";
-import { tariffCodeFromString } from "@/data/case-study-buildings";
-import { useGlbUrl } from "@/lib/glb-url";
-
-function toSimulatorAssetPath(p: string | null | undefined): string | null {
-  if (!p) return null;
-  if (/^https?:\/\//i.test(p)) return p;
-  if (p.startsWith("/static/")) return p;
-  if (p.startsWith("/")) return `/static${p}`;
-  return `/static/${p}`;
-}
-
-function buildSimulatorUrl(p: Project): string {
-  const params = new URLSearchParams();
-  const model = toSimulatorAssetPath(p.modelGlbPath);
-  if (model) params.set("model", model);
-  params.set("lat", String(p.lat));
-  params.set("lng", String(p.lon));
-  if (p.monthlyUsageKwh != null) params.set("usage", String(p.monthlyUsageKwh));
-  const code = tariffCodeFromString(p.tariffType);
-  if (code) params.set("tariff", code);
-  const gmap = toSimulatorAssetPath(p.measurementImgPath);
-  if (gmap) params.set("gmap", gmap);
-  return `${__SIMULATOR_URL__}/simulator?${params.toString()}`;
-}
 
 const SECTIONS = [
   { id: "sec-layout", label: "Layout", caption: "viewer · panels" },
@@ -52,16 +24,13 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
 
   const { data: project, isLoading } = useProject(id ?? '');
-  const glbUrl = useGlbUrl(project?.modelGlbPath);
 
   const [report, setReport] = useState<FullProjectReport | null>(null);
-  const [reportLoading, setReportLoading] = useState(false);
 
   useEffect(() => {
     if (!project?.reportId) return;
     let cancelled = false;
     setReport(null);
-    setReportLoading(true);
     loadProjectReport(project.reportId)
       .then((loadedReport) => {
         if (cancelled) return;
@@ -75,9 +44,6 @@ export default function ProjectDetail() {
         if (cancelled) return;
         console.warn("[ProjectDetail] failed to load report:", err);
         setReport(null);
-      })
-      .finally(() => {
-        if (!cancelled) setReportLoading(false);
       });
     return () => { cancelled = true; };
   }, [project?.reportId]);
@@ -136,18 +102,6 @@ export default function ProjectDetail() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <a
-            href="https://solar.limziyang.ml/simulator?model=%2Fstatic%2Fmodels%2Fvideo_7%2F3DModel.glb&lat=5.237826&lng=100.452277&usage=700&tariff=domestic&gmap=%2Fstatic%2Fmeasurement%2Feco_horizon.png"
-            target="_blank"
-            rel="noreferrer"
-            className="px-3.5 h-10 inline-flex items-center gap-2 rounded-full text-[12px] font-bold text-paper"
-            style={{ background: "var(--ink)" }}
-          >
-            <ArrowUpRight weight="duotone" size={14} />
-            Open in simulator
-          </a>
-        </div>
       </header>
 
       <SectionTabs sections={SECTIONS} />
@@ -155,21 +109,10 @@ export default function ProjectDetail() {
       <div className="py-8">
         {/* SECTION 1 — Layout */}
         <section id="sec-layout" className="scroll-mt-32 mb-12">
-          <SectionHeader index="01" title="Layout" subtitle="Reconstructed mesh + greedy panel pack + sun-path." />
+          <SectionHeader index="01" title="Layout" subtitle="Reconstructed mesh + panel layout (preview)." />
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_var(--right-width)] gap-5">
             <div className="flex flex-col gap-4 min-w-0">
-              {report ? (
-                <ExportedSceneViewer report={report} />
-              ) : reportLoading ? (
-                <ReportViewerSkeleton />
-              ) : glbUrl ? (
-                <MeshViewer lat={project.lat} lon={project.lon} glbUrl={glbUrl} />
-              ) : (
-                <MeshViewer lat={project.lat} lon={project.lon} />
-              )}
-              <div className="flex justify-center">
-                <SunPathScrubber />
-              </div>
+              <LayoutPlaceholder name={project.name} />
             </div>
             <div className="flex flex-col gap-5">
               <MetricStack
@@ -221,17 +164,22 @@ const SectionHeader = ({
   </div>
 );
 
-const ReportViewerSkeleton = () => (
+const LayoutPlaceholder = ({ name }: { name: string }) => (
   <div
     className="relative overflow-hidden rounded-2xl bg-blueprint"
     style={{ border: "1px solid var(--rule)", aspectRatio: "16/9", minHeight: 520 }}
   >
-    <div className="absolute inset-0 grid place-items-center">
-      <div
-        className="rounded-full bg-surface px-4 py-2 text-[12px] font-bold text-ink shadow-soft"
-        style={{ border: "1px solid var(--rule)" }}
-      >
-        Loading project model
+    <div className="absolute inset-0 grid place-items-center px-6 text-center">
+      <div>
+        <div
+          className="inline-block rounded-full bg-surface px-4 py-2 text-[12px] font-bold text-ink shadow-soft"
+          style={{ border: "1px solid var(--rule)" }}
+        >
+          3D layout preview
+        </div>
+        <p className="mt-3 mono text-[10px] uppercase tracking-[0.18em] text-mute">
+          {name} · interactive viewer disabled in this build
+        </p>
       </div>
     </div>
   </div>

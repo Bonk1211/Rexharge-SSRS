@@ -4,7 +4,6 @@ import type { Project } from "@/data/projects";
 import StatusPill from "@/components/chrome/StatusPill";
 import { fmtKWh, fmtKWp, fmtRM, fmtRelTime, fmtYears } from "@/lib/format";
 import Sparkline from "./Sparkline";
-import Mini3DPreview from "./Mini3DPreview";
 
 /* ProjectCard — gallery tile.
  * Diagonal flow: thumbnail block (left) → metric stack (right).
@@ -46,7 +45,14 @@ export default function ProjectCard({ project, index = 0 }: { project: Project; 
               loading="lazy"
             />
           ) : (
-            <Mini3DPreview project={project} />
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(135deg, color-mix(in srgb, var(--ink) 6%, transparent) 0 1px, transparent 1px 14px)",
+              }}
+            />
           )}
         </div>
         <div className="absolute top-3 right-3 pointer-events-none">

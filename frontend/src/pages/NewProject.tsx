@@ -3,9 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, CheckCircle, CloudArrowUp, X } from "@phosphor-icons/react";
 import HairlineRule from "@/components/chrome/HairlineRule";
-import Workspace3DSection from "@/components/workspace3d/Workspace3DSection";
 import { useCreateProject } from "@/store/projects-store";
-import { updateProject, uploadAsset, logEvent } from "@/lib/projects-api";
 import type { IntakeMode } from "@/data/projects";
 
 // ---------- types ----------
@@ -80,14 +78,6 @@ export default function NewProject() {
     });
   };
 
-  const setMultipleFiles = (entries: { kind: FileEntry["kind"]; file: File }[]) => {
-    setForm((f) => {
-      const newKinds = new Set(entries.map((e) => e.kind));
-      const rest = f.files.filter((e) => !newKinds.has(e.kind));
-      return { ...f, files: [...rest, ...entries.map((e) => ({ ...e, progress: 0 }))] };
-    });
-  };
-
   const setProgress = (file: File, progress: number) =>
     setForm((f) => ({
       ...f,
@@ -101,7 +91,7 @@ export default function NewProject() {
   const step2Valid = (() => {
     if (form.intakeMode === "demo") return !!form.files.find((e) => e.kind === "glb");
     if (form.intakeMode === "drone_video") return !!form.files.find((e) => e.kind === "source_video");
-    if (form.intakeMode === "photos") return !!form.files.find((e) => e.kind === "glb"); // the generated GLB is stored as 'glb' kind
+    if (form.intakeMode === "photos") return true; // reconstruction handled offline in this build
     return false;
   })();
 
@@ -112,7 +102,8 @@ export default function NewProject() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const project = await createProject.mutateAsync({
+      // Frontend-only build: nothing is persisted. Create a local draft for the UI flow.
+      await createProject.mutateAsync({
         name: form.name.trim(),
         address: form.address.trim() || undefined,
         lat: parseFloat(form.lat),
@@ -122,32 +113,14 @@ export default function NewProject() {
       });
 
       for (const entry of form.files) {
-        setProgress(entry.file, 10);
-        const { path } = await uploadAsset(project.id, entry.file, entry.kind);
-        setProgress(entry.file, 80);
-
-        const pathField: Partial<Record<FileEntry["kind"], string>> = {
-          glb:         "modelGlbPath",
-          measurement: "measurementImgPath",
-          data_json:   "dataJsonPath",
-        };
-        const fieldName = pathField[entry.kind];
-        if (fieldName) {
-          await updateProject(project.id, { [fieldName]: path } as never);
-        }
         setProgress(entry.file, 100);
       }
 
-      await logEvent(project.id, "created");
-      toast.success("Project ready — open in simulator next");
-      navigate(`/app/projects/${project.id}`);
+      toast.success("Project created (demo — not saved)");
+      navigate("/app/clients");
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message
-        : typeof err === "object" && err && "message" in err ? String((err as { message: unknown }).message)
-        : JSON.stringify(err);
       console.error("[NewProject] submit failed:", err);
-      toast.error(msg || "Something went wrong");
+      toast.error("Something went wrong");
       setSubmitting(false);
     }
   };
@@ -190,7 +163,7 @@ export default function NewProject() {
         {/* ---- step panels ---- */}
         {step === 0 && <Step0 form={form} set={set} />}
         {step === 1 && <Step1 form={form} set={set} />}
-        {step === 2 && <Step2 form={form} setFile={setFile} setMultipleFiles={setMultipleFiles} />}
+        {step === 2 && <Step2 form={form} setFile={setFile} />}
         {step === 3 && <Step3 form={form} />}
 
         {/* ---- nav ---- */}
@@ -337,51 +310,21 @@ function Step1({ form, set }: { form: FormData; set: <K extends keyof FormData>(
 function Step2({
   form,
   setFile,
-  setMultipleFiles,
 }: {
   form: FormData;
   setFile: (kind: FileEntry["kind"], file: File | null) => void;
-  setMultipleFiles: (entries: { kind: FileEntry["kind"]; file: File }[]) => void;
 }) {
   if (form.intakeMode === "photos") {
-    const hasGlb = form.files.some((f) => f.kind === "glb");
-
-    if (hasGlb) {
-      return (
-        <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-surface shadow-soft border border-rule animate-riseIn">
-          <div className="w-14 h-14 bg-leaf-tint rounded-full flex items-center justify-center mb-4 text-leaf-deep">
-            <CheckCircle weight="fill" size={28} />
-          </div>
-          <p className="text-ink font-bold text-[18px] mb-2">Model successfully imported</p>
-          <p className="text-mute text-[14px]">
-            The 3D model and its source photos are ready. You can proceed to review and create.
-          </p>
-        </div>
-      );
-    }
-
     return (
-      <div className="flex flex-col gap-5">
-        <p className="text-[13.5px] text-mute">
-          Upload your rooftop photos to reconstruct a 3D model.
+      <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-surface shadow-soft border border-rule animate-riseIn">
+        <div className="w-14 h-14 bg-leaf-tint rounded-full flex items-center justify-center mb-4 text-leaf-deep">
+          <CheckCircle weight="fill" size={28} />
+        </div>
+        <p className="text-ink font-bold text-[18px] mb-2">Photo reconstruction</p>
+        <p className="text-mute text-[14px] max-w-[46ch]">
+          In this frontend-only build the photo&nbsp;&rarr;&nbsp;3D reconstruction step runs
+          offline. Continue to review and create the draft project.
         </p>
-        <Workspace3DSection
-          onComplete={async (files, glbUrl) => {
-            try {
-              const res = await fetch(glbUrl);
-              const blob = await res.blob();
-              const glbFile = new File([blob], "reconstructed_model.glb", { type: "model/gltf-binary" });
-              
-              const entries: { kind: FileEntry["kind"]; file: File }[] = [
-                { kind: "glb", file: glbFile },
-                ...files.map((file) => ({ kind: "source_photo" as const, file })),
-              ];
-              setMultipleFiles(entries);
-            } catch (err) {
-              console.error("Failed to fetch generated GLB:", err);
-            }
-          }}
-        />
       </div>
     );
   }
@@ -525,7 +468,7 @@ function Step3({ form }: { form: FormData }) {
       </div>
 
       <p className="text-[12.5px] text-mute">
-        Clicking <strong className="text-ink">Create project</strong> will insert the project row, upload any attached files, and navigate to the Analysis page.
+        This is a frontend-only demo — clicking <strong className="text-ink">Create project</strong> won’t persist anything to a backend.
       </p>
     </div>
   );

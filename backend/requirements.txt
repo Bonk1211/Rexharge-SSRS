@@ -1,7 +1,0 @@
-fastapi>=0.115.6
-uvicorn[standard]>=0.32.1
-trimesh>=4.5.3
-numpy>=2.2.1
-python-multipart>=0.0.19
-pvlib>=0.15.1
-shapely>=2.1.2
