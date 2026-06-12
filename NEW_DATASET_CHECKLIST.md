@@ -84,6 +84,51 @@ Supabase only becomes relevant if you ALSO want the dataset registered as a proj
 
 ---
 
+## 7. Return link: simulator → this app (Clients + Monitoring)
+
+The simulator (`solar.limziyang.ml`) is an external app — this repo cannot add a
+"back" button there. What I can do is build the exact URL string; you (or whoever
+owns the simulator) paste it into the simulator's back/exit button.
+
+Deep-link targets in this app (React Router, `frontend/src/main.tsx`):
+
+| Page | URL path | Notes |
+|---|---|---|
+| Monitoring (dashboard) | `/app` | Index page |
+| Clients | `/app/clients` | |
+| Project detail | `/app/projects/<uuid>` | `<uuid>` must exist in `frontend/src/data/case-study-buildings.ts` |
+
+> None of these routes read query params today (`?foo=bar` is ignored). If you want
+> the simulator to pass state back (e.g. chosen usage/tariff, highlight a project),
+> that is a code change in this repo — say so and describe the desired behavior.
+
+Provide:
+
+| Field | Your value | Example | Notes |
+|---|---|---|---|
+| Deployed base URL of this app | | `https://app.rexcharge.example` | The origin the simulator should link back to |
+| Target page | monitoring / clients / project detail | `project detail` | |
+| Project `uuid` (if project detail) | | `66666666-6666-4666-8666-666666666666` | Existing uuid, or "new" — see below |
+| Open in same tab or new tab? | same / new | `same` | Converter currently opens simulator in a NEW tab, so "back" in the same tab won't return — same-tab back-link recommended |
+| Pass state back via query params? | no / describe | `no` | Requires code change here if yes |
+
+### If the back-link should land on a NEW dataset's project page
+
+Project detail pages are generated from the static registry, not Supabase. The new
+dataset must be registered in this repo:
+
+- `frontend/src/data/case-study-buildings.ts` — new entry: `uuid`, `name`, `address`,
+  `lat`, `lon`, `thumbnailHue`, `reportId`, `modelGlbUrl`, `measurementImgUrl`,
+  `thumbnailUrl`, `monthlyUsageKwh`, `tariffCode`
+- `frontend/src/data/reports/<name>.json` — report file supplying `kwp`, `annualKwh`,
+  `annualSavingsRm`, `paybackYears`, `panels`, `capacityFactor` (same shape as
+  `eco_horizon.json`)
+
+So for a full round trip (converter → simulator → back to monitoring/client page of
+the same dataset), provide sections 1–5 PLUS the registry fields above.
+
+---
+
 ### Minimal example (filled)
 
 ```
@@ -93,4 +138,6 @@ Simulator: model=/static/models/video_8/3DModel.glb
            gmap=/static/measurement/sentul_05.png
 Params:    lat=5.237826  lng=100.452277  usage=700  tariff=domestic
 Behavior:  use page Rooftop location inputs, fallback to params above
+Return:    https://app.rexcharge.example/app/projects/66666666-6666-4666-8666-666666666666
+           same tab, no query params
 ```
