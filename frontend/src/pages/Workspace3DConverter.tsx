@@ -81,6 +81,16 @@ export default function Workspace3DConverter() {
     timersRef.current = [];
   }
 
+  // Switching mode resets to the pre-generate state — the previous result
+  // belongs to the other mode's inputs, so showing it instantly looks fake.
+  function switchMode(next: Mode) {
+    if (next === mode) return;
+    clearTimers();
+    setMode(next);
+    setStage("idle");
+    setProgress(0);
+  }
+
   async function loadSample() {
     if (loadingSample) return;
     setLoadingSample(true);
@@ -190,10 +200,10 @@ export default function Workspace3DConverter() {
         style={{ gridArea: "left", borderRight: "1px solid var(--rule)" }}
       >
         <div className="grid grid-cols-2 gap-1.5 p-4 pb-0">
-          <ModeTab active={mode === "photos"} onClick={() => setMode("photos")} label="Photos">
+          <ModeTab active={mode === "photos"} onClick={() => switchMode("photos")} label="Photos">
             <PhotosIcon />
           </ModeTab>
-          <ModeTab active={mode === "drone"} onClick={() => setMode("drone")} label="Drone">
+          <ModeTab active={mode === "drone"} onClick={() => switchMode("drone")} label="Drone">
             <DroneIcon />
           </ModeTab>
         </div>
