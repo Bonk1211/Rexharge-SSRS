@@ -5,7 +5,7 @@ import MeshViewer from "@/components/viewer/MeshViewer";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
-  DEMO_PHOTO_SET_SAMPLE_HOUSE_3,
+  DEMO_PHOTO_SET_SAMPLE_HOUSE_4,
   loadDemoPhotoFiles,
 } from "@/data/demo-photos";
 
@@ -95,7 +95,7 @@ export default function Workspace3DConverter() {
     if (loadingSample) return;
     setLoadingSample(true);
     try {
-      const files = await loadDemoPhotoFiles(DEMO_PHOTO_SET_SAMPLE_HOUSE_3);
+      const files = await loadDemoPhotoFiles(DEMO_PHOTO_SET_SAMPLE_HOUSE_4);
       setPhotos(files.slice(0, 8));
       clearTimers();
       setStage("idle");
@@ -143,7 +143,7 @@ export default function Workspace3DConverter() {
     if (stage !== "done") return;
     const url = isDrone
       ? "https://solar.limziyang.ml/simulator?model=%2Fstatic%2Fmodels%2Fvideo_2%2F3DModel.glb&lat=3.128080&lng=101.651010&usage=5000&tariff=commercial_lv&gmap=%2Fstatic%2Fmeasurement%2Fssu.png"
-      : "https://solar.limziyang.ml/simulator?model=%2Fstatic%2Fmodels%2Fvideo_7%2F3DModel.glb&lat=5.237826&lng=100.452277&usage=700&tariff=domestic&gmap=%2Fstatic%2Fmeasurement%2Feco_horizon.png";
+      : "https://solar.limziyang.ml/simulator?model=%2Fstatic%2Fmodels%2Fvideo_9%2F3DModel.glb&lat=2.957551863707592&lng=101.55675957141467&usage=700&tariff=domestic&gmap=%2Fstatic%2Fmeasurement%2Fkk257.png";
     window.open(url, "_blank", "noopener,noreferrer");
   }
 

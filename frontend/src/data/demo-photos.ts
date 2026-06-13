@@ -24,6 +24,21 @@ export const DEMO_PHOTO_SET_SAMPLE_HOUSE_3: DemoPhotoRef[] = SAMPLE_HOUSE_3_FILE
   }),
 );
 
+const SAMPLE_HOUSE_4_FILES = [
+  "1f98dd24-1dad-4055-8a12-7f28eeddc35c.jpg",
+  "88e11f70-1325-4102-abbf-dd9d346a5e96.jpg",
+  "8a6566f8-3622-45ea-87ec-67f2ef64d98c.jpg",
+  "af0ea364-d595-4af2-bcf3-03b1d26921a3.jpg",
+  "bd8427cb-62ed-498f-b103-b1c40a0e182f.jpg",
+] as const;
+
+export const DEMO_PHOTO_SET_SAMPLE_HOUSE_4: DemoPhotoRef[] = SAMPLE_HOUSE_4_FILES.map(
+  (name) => ({
+    name,
+    url: `/demo-photos/sample-house-4/${name}`,
+  }),
+);
+
 export async function loadDemoPhotoFiles(refs: DemoPhotoRef[]): Promise<File[]> {
   return Promise.all(
     refs.map(async (ref) => {

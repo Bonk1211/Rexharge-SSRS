@@ -30,6 +30,11 @@ export interface CaseStudyBuilding {
   thumbnailUrl: string;
   reportId: string;
   thumbnailHue: number;
+  // Optional overrides. Default in makeProject(): status "ready",
+  // intakeMode "drone_video". A site still being reconstructed (no model /
+  // report yet) sets status "processing" + the relevant intake mode.
+  status?: "ready" | "processing" | "draft" | "failed";
+  intakeMode?: "drone_video" | "photos" | "demo";
 }
 
 export const CASE_STUDY_BUILDINGS: CaseStudyBuilding[] = [
@@ -107,6 +112,26 @@ export const CASE_STUDY_BUILDINGS: CaseStudyBuilding[] = [
     thumbnailUrl: "/ECO_HORIZON.PNG",
     reportId: "eco-horizon",
     thumbnailHue: 90,
+  },
+  {
+    uuid: "66666666-6666-4666-8666-666666666666",
+    projectIdString: "PRJ-KK257",
+    name: "KK257",
+    // TODO(confirm): coordinates are approximate for Bandar Saujana Putra.
+    address: "Bandar Saujana Putra, 42610 Jenjarom, Selangor",
+    lat: 2.945,
+    lon: 101.5635,
+    // TODO(confirm): usage/tariff are placeholders until the site is calibrated.
+    monthlyUsageKwh: 0,
+    tariffCode: "domestic",
+    // No reconstructed model / measurement / report yet — site is processing.
+    modelGlbUrl: "",
+    measurementImgUrl: "",
+    thumbnailUrl: "/clients/kk257/01.jpg",
+    reportId: "",
+    thumbnailHue: 350,
+    status: "processing",
+    intakeMode: "photos",
   },
 ];
 
