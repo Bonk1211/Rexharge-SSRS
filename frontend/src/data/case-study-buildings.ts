@@ -124,8 +124,8 @@ export const CASE_STUDY_BUILDINGS: CaseStudyBuilding[] = [
     // TODO(confirm): usage/tariff are placeholders until the site is calibrated.
     monthlyUsageKwh: 0,
     tariffCode: "domestic",
-    // No reconstructed model / measurement / report yet — site is processing.
-    modelGlbUrl: "",
+    // No measurement / report yet — site still processing.
+    modelGlbUrl: "/models/video_9/3DModel.glb",
     measurementImgUrl: "",
     thumbnailUrl: "/clients/kk257/01.jpg",
     reportId: "",

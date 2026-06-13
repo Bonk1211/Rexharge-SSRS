@@ -14,7 +14,7 @@ type Quality = "standard" | "lightweight";
 type Format = "glb" | "gltf" | "obj";
 type Stage = "idle" | "processing" | "done";
 
-const MODEL_URL = "/models/econ_horizon_3D.glb";
+const MODEL_URL = "/models/video_9/3DModel.glb";
 
 // Self-hosted drone footage (native <video>, zero third-party branding).
 const DRONE_VIDEO_SRC = "/models/video_2/rexharge_video_2.mp4";
