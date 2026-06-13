@@ -8,6 +8,7 @@ import ssuUmReport from "./reports/ssu_um.json";
 import householdReport from "./reports/household.json";
 import starGrocerReport from "./reports/star_grocer.json";
 import rainbowReport from "./reports/rainbow.json";
+import kk257Report from "./reports/kk257.json";
 
 const REPORTS_BY_ID: Record<string, unknown> = {
   "eco-horizon": ecoHorizonReport,
@@ -15,6 +16,7 @@ const REPORTS_BY_ID: Record<string, unknown> = {
   "household": householdReport,
   "star-grocer": starGrocerReport,
   "rainbow": rainbowReport,
+  "kk257": kk257Report,
 };
 
 export type ProjectStatus = "ready" | "processing" | "draft" | "failed";

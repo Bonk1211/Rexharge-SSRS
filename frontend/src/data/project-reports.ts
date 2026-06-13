@@ -6,7 +6,8 @@ export type ProjectReportId =
   | "ssu-um"
   | "household"
   | "star-grocer"
-  | "rainbow";
+  | "rainbow"
+  | "kk257";
 
 export type FullProjectReport = typeof ecoHorizonReport | typeof ssuUmReport;
 type PlaceholderReport = { _placeholder: true; [key: string]: unknown };
@@ -22,6 +23,7 @@ const projectReportLoaders: Record<ProjectReportId, () => Promise<ProjectReport>
   "household":   () => import("./reports/household.json").then((m) => m.default as ProjectReport),
   "star-grocer": () => import("./reports/star_grocer.json").then((m) => m.default as ProjectReport),
   "rainbow":     () => import("./reports/rainbow.json").then((m) => m.default as ProjectReport),
+  "kk257":       () => import("./reports/kk257.json").then((m) => m.default as ProjectReport),
 };
 
 export function hasProjectReport(reportId?: string): reportId is ProjectReportId {

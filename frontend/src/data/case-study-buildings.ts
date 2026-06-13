@@ -121,16 +121,14 @@ export const CASE_STUDY_BUILDINGS: CaseStudyBuilding[] = [
     address: "Bandar Saujana Putra, 42610 Jenjarom, Selangor",
     lat: 2.945,
     lon: 101.5635,
-    // TODO(confirm): usage/tariff are placeholders until the site is calibrated.
-    monthlyUsageKwh: 0,
+    // Usage/tariff per the calibrated solar report (kk257.json).
+    monthlyUsageKwh: 700,
     tariffCode: "domestic",
-    // No measurement / report yet — site still processing.
     modelGlbUrl: "/models/video_9/3DModel.glb",
-    measurementImgUrl: "",
+    measurementImgUrl: "/measurement/kk257.png",
     thumbnailUrl: "/clients/kk257/01.jpg",
-    reportId: "",
+    reportId: "kk257",
     thumbnailHue: 350,
-    status: "processing",
     intakeMode: "photos",
   },
 ];

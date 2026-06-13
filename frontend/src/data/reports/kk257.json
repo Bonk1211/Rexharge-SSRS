@@ -1,0 +1,681 @@
+{
+  "exportDate": "2026-06-13T01:17:44.162Z",
+  "site": {
+    "latitude": 2.957551863707592,
+    "longitude": 101.55675957141467,
+    "scenarioName": "Custom",
+    "modelUrl": "/static/models/video_9/3DModel.glb"
+  },
+  "scaleCalibration": {
+    "scaleFactor": "0.077835",
+    "realDimensions": "20.4m x 14.2m",
+    "roofArea_m2": "289.9"
+  },
+  "panelConfig": {
+    "model": "vertex-n-620",
+    "modelName": "Trina Vertex N 620W",
+    "specs": {
+      "name": "Trina Vertex N 620W",
+      "power_stc": 620,
+      "efficiency": 0.23,
+      "width": 1.134,
+      "height": 2.382,
+      "depth": 0.03,
+      "area": 2.7011879999999997,
+      "weight": 33,
+      "vmp": 40.24,
+      "imp": 15.41,
+      "voc": 48.5,
+      "isc": 16.26,
+      "noct": 43,
+      "gamma": -0.0029,
+      "gamma_voc": -0.0024,
+      "gamma_isc": 0.0004,
+      "bifacial_gain": 0.05,
+      "degradation_y1": 0.01,
+      "degradation_annual": 0.004,
+      "warranty_years": 30,
+      "power_guarantee_30y": 0.874,
+      "cells": 132,
+      "max_system_voltage": 1500
+    },
+    "orientation": "auto",
+    "rowSpacing_m": "0",
+    "panelLift_m": "0",
+    "maxPanels": "10"
+  },
+  "inverterConfig": {
+    "model": "sigen-6sp",
+    "modelName": "Sigen 6.0 SP2 (Single Phase)",
+    "specs": {},
+    "invertersNeeded": "1",
+    "totalACCapacity": "6.0 kW",
+    "dcAcRatio": "1.03"
+  },
+  "systemSummary": {
+    "totalPanels": "10",
+    "systemCapacity": "6.2 kWp",
+    "coverage": "9%",
+    "annualYield": "8.7 MWh",
+    "suggestedPanels": "10 (100% coverage)"
+  },
+  "energyProduction": {
+    "dailyAvg": "23.7 kWh",
+    "monthlyAvg": "722 kWh",
+    "annualTotal": "8.7 MWh",
+    "specificYield": "1398 kWh/kWp"
+  },
+  "environmentalFactors": {
+    "solarIrradiance": "996 W/m²",
+    "temperature": "-- °C",
+    "windSpeed": "-- m/s",
+    "humidity": "-- %",
+    "dustLoss": "3%",
+    "sunElevation": "74.5°"
+  },
+  "lossAnalysis": {
+    "temperatureLoss": "5%",
+    "dustSoiling": "3%",
+    "inverterLoss": "1.5%",
+    "wiringLoss": "2%",
+    "shadingLoss": "2%",
+    "performanceRatio": "85.5%"
+  },
+  "financial": {
+    "tariffType": "Domestik (Rumah)",
+    "monthlyUsage_kWh": "700",
+    "nemEnabled": false,
+    "effectiveRate": "RM 0.4288/kWh",
+    "billNoSolar": "RM 310",
+    "billWithSolar": "RM 0",
+    "monthlySavings": "RM 310",
+    "annualSavings": "RM 3,716",
+    "systemCost": "RM 23,560",
+    "paybackPeriod": "6.3 yrs",
+    "co2Offset": "5.1 tonnes/yr"
+  },
+  "simulation": {
+    "date": "2026-05-13",
+    "time": "12:00",
+    "sunrise": "",
+    "sunset": ""
+  },
+  "buildingIsolation": {
+    "clipBounds_model": {
+      "xMin": -1.00486260652542,
+      "xMax": 0.995137393474579,
+      "zMin": -0.798790812492371,
+      "zMax": 0.701209187507629
+    },
+    "clipBounds_realWorld_m": {
+      "xMin": -12.91011913457922,
+      "xMax": 12.7851730391825,
+      "zMin": -10.262581656354,
+      "zMax": 9.0088874739673
+    },
+    "modelBounds": {
+      "minX": -0.8364265263080597,
+      "maxX": 0.836742490530014,
+      "minY": 0.000048026442527770996,
+      "maxY": 0.4601280838251114,
+      "minZ": -0.6656590104103088,
+      "maxZ": 0.6618109941482544
+    },
+    "modelScale": 0.0778352698414639,
+    "realWorldWidth_m": 20.370169917598936,
+    "realWorldDepth_m": 14.23,
+    "roofArea_m2": 289.86751792743286
+  },
+  "panels": [
+    {
+      "index": 0,
+      "position_model": {
+        "x": 0.05178738567429808,
+        "y": 0.33246166057038407,
+        "z": -0.35027711087253327
+      },
+      "position_realWorld_m": {
+        "x": 0.665346002908186,
+        "y": 4.27134975246501,
+        "z": -4.500236352825437
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.09965155062369589,
+          "y": 0.7002006977595465,
+          "z": 0.026596092475143523,
+          "w": 0.7064571616134979
+        },
+        "euler_deg": {
+          "x": -90.1360907804592,
+          "y": 79.74427457825604,
+          "z": 84.19006394502479,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "portrait",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 1,
+      "position_model": {
+        "x": 0.050196493781590114,
+        "y": 0.3414624156673105,
+        "z": -0.2624864285660104
+      },
+      "position_realWorld_m": {
+        "x": 0.644906786908186,
+        "y": 4.38698826846501,
+        "z": -3.3723327368254377
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.09965155062369589,
+          "y": 0.7002006977595465,
+          "z": 0.026596092475143523,
+          "w": 0.7064571616134979
+        },
+        "euler_deg": {
+          "x": -90.1360907804592,
+          "y": 79.74427457825604,
+          "z": 84.19006394502479,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "portrait",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 2,
+      "position_model": {
+        "x": -0.4035958129157409,
+        "y": 0.3288452629260684,
+        "z": 0.20964208367709858
+      },
+      "position_realWorld_m": {
+        "x": -5.185256166488421,
+        "y": 4.224887555421413,
+        "z": 2.6934072959996267
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.0006887968113267198,
+          "y": -0.7044053694419122,
+          "z": 0.00066709200540104,
+          "w": 0.7097971436718733
+        },
+        "euler_deg": {
+          "x": -0.2855720489025689,
+          "y": -89.56182604064126,
+          "z": -0.17570809206592736,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "portrait",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 3,
+      "position_model": {
+        "x": -0.4029227907962392,
+        "y": 0.32901446730680084,
+        "z": 0.2979045434562427
+      },
+      "position_realWorld_m": {
+        "x": -5.176609416488421,
+        "y": 4.2270614334214125,
+        "z": 3.8273721419996276
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.0006887968113267198,
+          "y": -0.7044053694419122,
+          "z": 0.00066709200540104,
+          "w": 0.7097971436718733
+        },
+        "euler_deg": {
+          "x": -0.2855720489025689,
+          "y": -89.56182604064126,
+          "z": -0.17570809206592736,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "portrait",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 4,
+      "position_model": {
+        "x": -0.40224976867673756,
+        "y": 0.32918367168753326,
+        "z": 0.3861670032353867
+      },
+      "position_realWorld_m": {
+        "x": -5.167962666488421,
+        "y": 4.229235311421413,
+        "z": 4.961336987999627
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.0006887968113267198,
+          "y": -0.7044053694419122,
+          "z": 0.00066709200540104,
+          "w": 0.7097971436718733
+        },
+        "euler_deg": {
+          "x": -0.2855720489025689,
+          "y": -89.56182604064126,
+          "z": -0.17570809206592736,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "portrait",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 5,
+      "position_model": {
+        "x": -0.32513641124437037,
+        "y": 0.2959273257916611,
+        "z": 0.012341572661250941
+      },
+      "position_realWorld_m": {
+        "x": -4.177237541626224,
+        "y": 3.801969549208354,
+        "z": 0.15856015770727655
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.00960441368851828,
+          "y": 0.9999048678505621,
+          "z": 0.009882647573005757,
+          "w": 0.0005941407018820387
+        },
+        "euler_deg": {
+          "x": -178.86691143941073,
+          "y": 0.05720035078977515,
+          "z": 178.8987787908107,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "landscape",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 6,
+      "position_model": {
+        "x": -0.3250483225787622,
+        "y": 0.2976727700425654,
+        "z": -0.07590632336055306
+      },
+      "position_realWorld_m": {
+        "x": -4.176105809626224,
+        "y": 3.824394399208354,
+        "z": -0.9752175782927233
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.00960441368851828,
+          "y": 0.9999048678505621,
+          "z": 0.009882647573005757,
+          "w": 0.0005941407018820387
+        },
+        "euler_deg": {
+          "x": -178.86691143941073,
+          "y": 0.05720035078977515,
+          "z": 178.8987787908107,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "landscape",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 7,
+      "position_model": {
+        "x": -0.5101533696759436,
+        "y": 0.29935028044830486,
+        "z": -0.34090549760435157
+      },
+      "position_realWorld_m": {
+        "x": -6.554269943626225,
+        "y": 3.845946459208354,
+        "z": -4.379833182292722
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.00960441368851828,
+          "y": 0.9999048678505621,
+          "z": 0.009882647573005757,
+          "w": 0.0005941407018820387
+        },
+        "euler_deg": {
+          "x": -178.86691143941073,
+          "y": 0.05720035078977515,
+          "z": 178.8987787908107,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "landscape",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 8,
+      "position_model": {
+        "x": -0.324960233913154,
+        "y": 0.29941821429346976,
+        "z": -0.16415421938235708
+      },
+      "position_realWorld_m": {
+        "x": -4.174974077626224,
+        "y": 3.8468192492083535,
+        "z": -2.108995314292723
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.00960441368851828,
+          "y": 0.9999048678505621,
+          "z": 0.009882647573005757,
+          "w": 0.0005941407018820387
+        },
+        "euler_deg": {
+          "x": -178.86691143941073,
+          "y": 0.05720035078977515,
+          "z": 178.8987787908107,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "landscape",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    },
+    {
+      "index": 9,
+      "position_model": {
+        "x": -0.3246959679163293,
+        "y": 0.30465454704618283,
+        "z": -0.42889790744776907
+      },
+      "position_realWorld_m": {
+        "x": -4.171578881626224,
+        "y": 3.914093799208354,
+        "z": -5.510328522292722
+      },
+      "orientation": {
+        "quaternion": {
+          "x": -0.00960441368851828,
+          "y": 0.9999048678505621,
+          "z": 0.009882647573005757,
+          "w": 0.0005941407018820387
+        },
+        "euler_deg": {
+          "x": -178.86691143941073,
+          "y": 0.05720035078977515,
+          "z": 178.8987787908107,
+          "order": "XYZ"
+        }
+      },
+      "surfaceNormal": null,
+      "faceId": null,
+      "panelOrientation": "landscape",
+      "panelSpec": {
+        "name": "Trina Vertex N 620W",
+        "power_stc": 620,
+        "efficiency": 0.23,
+        "width": 1.134,
+        "height": 2.382,
+        "depth": 0.03,
+        "area": 2.7011879999999997,
+        "weight": 33,
+        "vmp": 40.24,
+        "imp": 15.41,
+        "voc": 48.5,
+        "isc": 16.26,
+        "noct": 43,
+        "gamma": -0.0029,
+        "gamma_voc": -0.0024,
+        "gamma_isc": 0.0004,
+        "bifacial_gain": 0.05,
+        "degradation_y1": 0.01,
+        "degradation_annual": 0.004,
+        "warranty_years": 30,
+        "power_guarantee_30y": 0.874,
+        "cells": 132,
+        "max_system_voltage": 1500
+      }
+    }
+  ]
+}
